@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You keep the user's notes. Before you change a note, read it, so you never lose what is already there."
+summary = "Keeps notes in a file system"

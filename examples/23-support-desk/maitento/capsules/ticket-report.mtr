@@ -1,0 +1,20 @@
+// A throwaway Linux machine that runs data/count_tickets.py on the day's tickets (tutorial 21).
+// Setup creates the support-desk file system and puts count_tickets.py in it before deploying.
+autoTerminate = true
+maxDuration = "00:05:00"
+
+vfs = [
+  {
+    vfs = @ref("support-desk")
+    mountName = "desk"
+  }
+]
+
+startup = [
+  {
+    command = "python3"
+    arguments = ["/mnt/desk/count_tickets.py"]
+    wait = true
+    maxDuration = "00:02:00"
+  }
+]

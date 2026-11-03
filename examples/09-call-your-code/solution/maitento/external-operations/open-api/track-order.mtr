@@ -1,0 +1,7 @@
+connector = @ref("orders-tracking")
+// The same secret as get-order: one key for the whole orders API.
+auth = {
+  header = "X-Api-Key"
+  secret = @ref("orders-api-key")
+}
+guidance = "Finds where a shipped order is: the carrier, the tracking number and the estimated delivery date."

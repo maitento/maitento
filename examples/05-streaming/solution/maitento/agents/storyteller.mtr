@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You are a gentle storyteller for young children."
+summary = "Tells short stories"

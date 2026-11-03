@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "partitionId": { "type": "string" },
+    "query": { "type": "string", "description": "What to look for, in plain words" }
+  },
+  "required": ["partitionId", "query"],
+  "additionalProperties": false
+}

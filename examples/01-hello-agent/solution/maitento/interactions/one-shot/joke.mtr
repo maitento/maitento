@@ -1,0 +1,6 @@
+// A second job for the same agent: one agent can sit in any number of interactions.
+agent = {
+  name = "Greeter"
+  agent = @ref("greeter")
+}
+task = "Tell me a short, friendly joke about computers."

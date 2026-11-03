@@ -1,0 +1,4 @@
+// The SDK live test's agent. DeepSeek's flash model: cheap and fast.
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You are a friendly assistant. Keep every answer to one or two sentences."
+summary = "A friendly assistant"

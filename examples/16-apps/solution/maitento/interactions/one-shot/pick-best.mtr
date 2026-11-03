@@ -1,0 +1,16 @@
+// The challenge's judge: the copywriter picks the strongest of the taglines.
+agent = {
+  name = "Copywriter"
+  agent = @ref("copywriter")
+}
+task = "Here are taglines for %%product%%, as a JSON list: %%taglines%%. Pick the strongest one. Reply with that tagline only, exactly as written."
+inputs.prompts = [
+  {
+    name = "product"
+    required = true
+  },
+  {
+    name = "taglines"
+    required = true
+  }
+]

@@ -1,0 +1,17 @@
+// The fourth connector: deletes a file. Like the other three, it calls Maitento's own API.
+method = "DELETE"
+url = "https://api.maitento.com/vfs/by-id/{id}/files"
+description = "Deletes a file from a virtual file system"
+auth = "Maitento"
+parameters.path = [
+  {
+    name = "id"
+    description = "The virtual file system id"
+  }
+]
+parameters.query = [
+  {
+    name = "path"
+    description = "The file to delete, for example /shopping.md"
+  }
+]

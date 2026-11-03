@@ -1,0 +1,2 @@
+connector = @ref("vfs-delete")
+guidance = "Deletes one note for good. Use it when the user asks you to delete a note: their request is the confirmation, so don't ask again. Get the note's exact name from list-notes first."

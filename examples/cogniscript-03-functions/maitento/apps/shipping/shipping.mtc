@@ -1,0 +1,58 @@
+// The shipping app from lesson 2, split into functions: main and the printing are here, the rates in rates.mtc.
+// Every .mtc file in the app's folder is part of the app, so a function in one file can call one in another.
+// region:main
+string main(string weights, string destination) {
+	decimal rate = DestinationRate(destination);
+	PrintLine("Shipping to " + destination);
+
+	jsonArray parcels = StringSplit(weights, ",", false);
+	int boxes = 0;
+	decimal total = 0;
+	for (int i = 0; i < JsonArrayCount(parcels); i++) {
+		if (boxes == 6) {
+			PrintLine("The van is full: the other parcels wait for the next one.");
+			break;
+		}
+
+		string weight = StringTrim(JsonArrayGetAtIndex(parcels, i));
+		if (weight == "") {
+			continue;
+		}
+		if (!TypeIsDecimal(weight)) {
+			PrintLine("Skipped \"" + weight + "\": not a weight in kg");
+			continue;
+		}
+
+		decimal left = weight;
+		while (left > 0) {
+			decimal box = MathMin(left, 20);
+			left = left - box;
+			// Each call hands back its answer: keep it in a variable, and pass it on.
+			string size = BoxSize(box);
+			decimal price = SizePrice(size) * rate;
+			boxes = boxes + 1;
+			total = total + price;
+			PrintBox(boxes, box, size, price);
+		}
+	}
+
+	total = WithDiscount(total, destination);
+	string shown = Money(total);
+	PrintLine("Total for " + boxes + " boxes: " + shown);
+	return(shown);
+}
+// endregion
+
+// region:helpers
+// A function names the type it returns, then its parameters. void means it returns nothing.
+// It sees only its own parameters and variables: everything it needs is passed in.
+void PrintBox(int number, decimal kg, string size, decimal price) {
+	string amount = Money(price);
+	PrintLine("Box " + number + ": " + kg + " kg, " + size + ", " + amount);
+}
+
+// An amount of money as text, with two decimal places.
+string Money(decimal amount) {
+	return(DecimalToString(amount, "0.00"));
+}
+// endregion

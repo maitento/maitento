@@ -1,0 +1,2 @@
+connector = @ref("vfs-list")
+guidance = "Lists the notes that exist. Use path / to see them all."

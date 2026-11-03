@@ -1,0 +1,107 @@
+{
+  "name": "maitento-mtr",
+  "displayName": "Maitento project files",
+  "description": "Syntax highlighting, completion, hover docs and checks for Maitento's .mtr project files, and highlighting for Cogniscript (.mtc).",
+  "version": "0.1.0",
+  "publisher": "maitento",
+  "license": "Apache-2.0",
+  "homepage": "https://docs.maitento.com/reference/project-files/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maitento/maitento.git",
+    "directory": "editors/vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/maitento/maitento/issues"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Snippets"
+  ],
+  "keywords": [
+    "maitento",
+    "mtr",
+    "cogniscript",
+    "agents"
+  ],
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "main": "./out/src/extension.js",
+  "activationEvents": [
+    "onLanguage:mtr"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "mtr",
+        "aliases": [
+          "Maitento resource",
+          "mtr"
+        ],
+        "extensions": [
+          ".mtr"
+        ],
+        "configuration": "./language-configuration/mtr.json"
+      },
+      {
+        "id": "mtc",
+        "aliases": [
+          "Cogniscript",
+          "mtc"
+        ],
+        "extensions": [
+          ".mtc"
+        ],
+        "configuration": "./language-configuration/mtc.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mtr",
+        "scopeName": "source.mtr",
+        "path": "./syntaxes/mtr.tmLanguage.json"
+      },
+      {
+        "language": "mtc",
+        "scopeName": "source.mtc",
+        "path": "./syntaxes/mtc.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "mtr",
+        "path": "./snippets/mtr.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "maitento.openMtrReference",
+        "title": "Maitento: Open the project-file reference"
+      }
+    ],
+    "configuration": {
+      "title": "Maitento",
+      "properties": {
+        "maitento.mtr.diagnostics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check .mtr files as you type: unknown and missing properties, values of the wrong kind, and references and includes that do not resolve."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -p ./ && node scripts/prepare.mjs",
+    "test": "npm run build && node --test \"out/test/*.test.js\"",
+    "check-project": "node out/src/cli.js",
+    "package": "npm run build && vsce package --no-dependencies --out maitento-mtr.vsix"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/vscode": "1.100.0",
+    "@vscode/vsce": "3.9.2",
+    "typescript": "6.0.3"
+  }
+}

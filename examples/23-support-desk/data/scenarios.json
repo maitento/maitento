@@ -1,0 +1,47 @@
+[
+  {
+    "id": "broken-grinder",
+    "title": "A broken grinder",
+    "shows": "Looks the order up, reads the returns policy and asks you to approve a refund.",
+    "customer": "Sam Lee",
+    "email": "sam.lee@example.com",
+    "subject": "Grinder handle snapped",
+    "message": "Hi, my order A-1001 arrived yesterday but the hand grinder's handle snapped off the first time I used it. Can I get my money back for the grinder?"
+  },
+  {
+    "id": "sam-again",
+    "title": "Sam writes again",
+    "shows": "Remembers Sam from the broken grinder: send that one first.",
+    "customer": "Sam Lee",
+    "email": "sam.lee@example.com",
+    "subject": "Reordering",
+    "message": "Hello again! I'd like to order more of the coffee I bought from you last time, but I've lost the email. Which beans were they?"
+  },
+  {
+    "id": "late-parcel",
+    "title": "A late parcel",
+    "shows": "Checks the order against the delivery policy before promising anything.",
+    "customer": "Ana Silva",
+    "email": "ana.silva@example.com",
+    "subject": "Where is my coffee?",
+    "message": "Hello, my order A-1002 was sent last week and still hasn't arrived. Where is it, and what happens if it never turns up?"
+  },
+  {
+    "id": "brewing-advice",
+    "title": "Brewing advice",
+    "shows": "Searches the web and reads a brewing guide, because the policies don't cover it.",
+    "customer": "Priya Shah",
+    "email": "priya.shah@example.com",
+    "subject": "AeroPress settings",
+    "message": "Hi! I've just got my AeroPress Go from you. What grind size, water temperature and brew time would you suggest for a light roast like the Yirgacheffe?"
+  },
+  {
+    "id": "stale-beans",
+    "title": "Stale beans",
+    "shows": "A refund to reject: give a reason and watch the reply change.",
+    "customer": "Tom Okafor",
+    "email": "tom.okafor@example.com",
+    "subject": "Beans taste flat",
+    "message": "The Kenya AA from order A-1003 tastes flat, and the roast date printed on the bag is more than two months ago. Can I have a refund for it?"
+  }
+]

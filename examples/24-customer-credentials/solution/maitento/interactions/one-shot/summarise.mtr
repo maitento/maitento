@@ -1,0 +1,14 @@
+// Acme's own interaction: every run of it uses Acme's stack, unless its start names another.
+agent = {
+  name = "Summariser"
+  agent = @ref("summariser")
+}
+task = "Summarise this: %%text%%"
+inputs.prompts = [
+  {
+    name = "text"
+    description = "The text to summarise"
+    required = true
+  }
+]
+credentialStack = "customer-acme"

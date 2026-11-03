@@ -1,0 +1,6 @@
+// A loom a whole household shares. Declared here, it exists before anyone talks to Wren: deploying
+// creates it (or updates its settings); a deploy never touches what it holds.
+
+description = "What Wren knows about the family: shared across everyone who talks to it in wren-family."
+nightWeaving = true
+quietMinutes = 5

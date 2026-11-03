@@ -1,0 +1,13 @@
+{
+  "name": "maitento",
+  "displayName": "Maitento",
+  "description": "Teaches your coding agent to build AI apps on Maitento: agents, interactions, tools, apps in Cogniscript and code pipelines, and deploying them with mt or the SDKs.",
+  "author": {
+    "name": "Maitento",
+    "url": "https://maitento.com"
+  },
+  "homepage": "https://docs.maitento.com/guides/ai-coding-agents/",
+  "repository": "https://github.com/maitento/maitento",
+  "license": "Apache-2.0",
+  "keywords": ["maitento", "ai-agents", "agents", "mtr", "cogniscript", "llm"]
+}

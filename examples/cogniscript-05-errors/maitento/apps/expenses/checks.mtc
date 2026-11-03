@@ -1,0 +1,38 @@
+// region:check-inputs
+// Ends the run when there is nothing to do, and fails it when there is nothing it can use.
+void CheckInputs(string expenses) {
+	string trimmed = StringTrim(expenses);
+	if (trimmed == "") {
+		// throw ends the run with status Error. Its message becomes the run's failureDetails.
+		throw("Send the expenses as \"what amount\" pairs separated by semicolons, such as \"Taxi 23.50; Lunch 12\".");
+	}
+	if (StringToLower(trimmed) == "none") {
+		// Nothing to claim isn't an error. exit ends the whole run, from any function, with status Finished.
+		exit("No expenses to claim.");
+	}
+}
+// endregion
+
+// region:read-limit
+// Reads the spending limit. StringToDecimal fails on text that isn't a number, with its own message: swap it for one
+// that says what to send.
+decimal ReadLimit(string limit) {
+	try {
+		return(StringToDecimal(limit));
+	} catch {
+		throw("The limit must be a number, such as 100, not \"" + limit + "\".");
+	}
+}
+// endregion
+
+// region:read-amount
+// Reads the amount at the end of an entry such as "Taxi 23.50".
+decimal ReadAmount(string entry) {
+	int space = StringLastIndexOf(entry, " ", false);
+	if (space < 0) {
+		throw("there is no amount");
+	}
+	// Nothing here catches StringToDecimal's error, so it goes up to the catch in main.
+	return(StringToDecimal(StringSubstring(entry, space + 1, "")));
+}
+// endregion

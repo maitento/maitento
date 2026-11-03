@@ -1,0 +1,7 @@
+// Maitento's own search endpoint, the same one the SDK's files.search calls.
+// auth = "Maitento": Maitento signs each call for the run, so there's no key to store.
+method = "PUT"
+url = "https://api.maitento.com/files/embeddings/search"
+description = "Searches a knowledge base and returns the closest passages"
+schema.request = @json("knowledge-search-request")
+auth = "Maitento"

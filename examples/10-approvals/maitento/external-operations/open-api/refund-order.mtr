@@ -1,0 +1,8 @@
+connector = @ref("orders-refund")
+auth = {
+  header = "X-Api-Key"
+  secret = @ref("orders-api-key")
+}
+guidance = "Refunds an order. Only refund what the customer asked for, and never more than the order total."
+// A person must approve every refund before Maitento calls your server.
+requiresApproval = true

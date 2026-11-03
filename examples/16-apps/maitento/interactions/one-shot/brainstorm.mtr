@@ -1,0 +1,12 @@
+agent = {
+  name = "Copywriter"
+  agent = @ref("copywriter")
+}
+task = "Suggest exactly three different campaign angles for this product: %%product%%"
+inputs.prompts = [
+  {
+    name = "product"
+    required = true
+  }
+]
+schema.solution = @json("ideas")

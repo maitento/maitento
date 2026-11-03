@@ -1,0 +1,22 @@
+agent = {
+  name = "LeadResearcher"
+  agent = @ref("lead-researcher")
+}
+task = "Compare these countries: %%countries%%. For each country, start one country-facts and one country-dish interaction, all at once, wait for them all, then write a short comparison with a row for each country's dish."
+inputs.prompts = [
+  {
+    name = "countries"
+    description = "A comma-separated list of countries"
+    required = true
+  }
+]
+// Both children may be started. Two per country, so six can run at once for three countries.
+swarm = {
+  interactions = [
+    @ref("country-facts"),
+    @ref("country-dish")
+  ]
+  maxConcurrent = 6
+  maxTotal = 12
+}
+duration.max = "00:05:00"

@@ -1,0 +1,70 @@
+agent = {
+  name = "Desk"
+  agent = @ref("desk-agent")
+}
+task = @prompt("draft-reply-task")
+inputs.prompts = [
+  {
+    name = "customer"
+    description = "The customer's name"
+    required = true
+  },
+  {
+    name = "email"
+    description = "The customer's email address: whose memory the agent wakes up with"
+    required = true
+  },
+  {
+    name = "message"
+    description = "What the customer wrote"
+    required = true
+  },
+  {
+    name = "category"
+    required = true
+  },
+  {
+    name = "urgency"
+    required = true
+  },
+  {
+    name = "orderId"
+    required = false
+  }
+]
+functions.openApi = [
+  {
+    name = "find-order"
+    ref = @ref("find-order")
+  },
+  {
+    name = "issue-refund"
+    ref = @ref("issue-refund")
+  },
+  {
+    name = "search-policies"
+    ref = @ref("search-policies")
+  }
+]
+// The knowledge base id comes in with each run and goes straight into the search (tutorial 13).
+inputs.functions.binding = [
+  {
+    function = @ref("search-policies")
+    name = "policiesId"
+    target = "partitionId"
+    description = "The knowledge base that holds the shop's policies"
+    required = true
+    type = "request"
+  }
+]
+// One memory per customer, chosen by their email address (tutorial 20).
+loom = {
+  enabled = true
+  scope = "Input"
+  scopeInput = "email"
+  subjectInputs = [ "customer" ]
+  recall = "Suggest"
+  weave = "Manual"
+}
+duration.warn = "00:03:00"
+duration.max = "00:05:00"

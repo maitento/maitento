@@ -1,0 +1,225 @@
+"""Sends one API call: credentials, retries, timeouts and error mapping around an ``httpx`` client.
+
+The rules themselves (what is retried, how errors map, how bodies decode) live in ``maitento/_http.py``.
+"""
+
+from __future__ import annotations
+
+import logging
+import platform
+import random
+import time
+from typing import Any, Callable, Dict, Optional
+
+import httpx
+
+from .. import _aio
+from .._auth import Credentials, JwtState
+from .._generated.models import AuthenticateResponse
+from .._http import NO_BODY, RETRY_STATUSES, RequestSpec, decode_body, error_for, parse, retry_after_seconds, retry_delay
+from .._version import __version__
+from ..errors import (
+    AuthenticationError,
+    ConnectionError,
+    NotFoundError,
+    PermissionError,
+    ResponseParseError,
+    TimeoutError,
+)
+
+logger = logging.getLogger("maitento")
+
+RENEW_RETRY_SECONDS = 60.0
+"""After a failed proactive renewal, wait this long before trying again (the token is still valid meanwhile)."""
+
+
+def default_user_agent(suffix: Optional[str]) -> str:
+    agent = f"maitento-python/{__version__} python/{platform.python_version()} httpx/{httpx.__version__}"
+    return f"{agent} {suffix}" if suffix else agent
+
+
+class AsyncTransport:
+    """One client's connection to the API: its base URL, credential, defaults and ``httpx`` client."""
+
+    def __init__(
+        self,
+        *,
+        base_url: str,
+        credentials: Credentials,
+        timeout: float,
+        max_retries: int,
+        http_client: Optional[httpx.AsyncClient] = None,
+        user_agent: Optional[str] = None,
+        clock: Callable[[], float] = time.time,
+        rng: Callable[[], float] = random.random,
+    ) -> None:
+        self.base_url = base_url.rstrip("/")
+        self.credentials = credentials
+        self.timeout = timeout
+        self.max_retries = max_retries
+        self.user_agent = default_user_agent(user_agent)
+        self._http = http_client if http_client is not None else httpx.AsyncClient()
+        self._owns_http = http_client is None
+        self._clock = clock
+        self._rng = rng
+        self._jwt: Optional[JwtState] = None
+        self._renew_blocked_until = 0.0
+        self._lock = _aio.Lock()
+
+    async def close(self) -> None:
+        if self._owns_http:
+            await self._http.aclose()
+
+    # ------------------------------------------------------------------------------------------------- credentials
+
+    async def authorization(self, *, force_refresh: bool = False) -> str:
+        """The ``Authorization`` header value, renewing or obtaining a JWT first when it is due."""
+        api_key = self.credentials.api_key
+        if api_key is not None:
+            return api_key.authorization
+        async with self._lock:
+            now = self._clock()
+            state = self._jwt
+            if state is None or force_refresh or (state.should_renew(now) and now >= self._renew_blocked_until):
+                state = await self._obtain(state, now, force_refresh)
+                self._jwt = state
+            return f"Bearer {state.token}"
+
+    async def _obtain(self, state: Optional[JwtState], now: float, force_refresh: bool) -> JwtState:
+        credentials = self.credentials
+        if credentials.token_provider is not None:
+            token = await _aio.resolve(credentials.token_provider())
+            if not isinstance(token, str) or not token.strip():
+                raise AuthenticationError("The token provider returned no token.", status=401)
+            return JwtState.create(token.strip(), now=now)
+        if state is None:
+            if credentials.email is not None:
+                return await self._login(now)
+            assert credentials.token is not None
+            state = JwtState.create(credentials.token, now=now)
+            if not force_refresh and not state.should_renew(now):
+                return state
+        try:
+            return await self._renew(state, now)
+        except (AuthenticationError, PermissionError):
+            if credentials.email is not None:
+                return await self._login(now)
+            if force_refresh or state.is_expired(now):
+                raise
+            # A process-scoped token cannot be renewed (403), and a transient refusal should not fail a call the
+            # current token can still make: keep using it, and try again a little later.
+            logger.warning("Could not renew the JWT; using the current token until it expires.")
+            self._renew_blocked_until = now + RENEW_RETRY_SECONDS
+            return state
+
+    async def _login(self, now: float) -> JwtState:
+        spec = RequestSpec(
+            "PUT",
+            "/auth",
+            json={"emailAddress": self.credentials.email, "password": self.credentials.password},
+            authenticated=False,
+        )
+        return self._jwt_from(await self.request(spec), now)
+
+    async def _renew(self, state: JwtState, now: float) -> JwtState:
+        spec = RequestSpec("GET", "/auth/renew", authorization=f"Bearer {state.token}")
+        return self._jwt_from(await self.request(spec), now)
+
+    def _jwt_from(self, body: Any, now: float) -> JwtState:
+        response: AuthenticateResponse = parse(AuthenticateResponse, body)
+        token = response.authentication_token
+        return JwtState.create(token.token, now=now, expires_at=token.expires.timestamp())
+
+    # ------------------------------------------------------------------------------------------------------- calls
+
+    async def request(self, spec: RequestSpec) -> Any:
+        """Sends ``spec`` and returns its decoded body (``dict``/``list`` for JSON, ``str`` for text, ``bytes``
+        otherwise, ``None`` when empty)."""
+        response = await self.send(spec)
+        return self.decode(spec, response)
+
+    def decode(self, spec: RequestSpec, response: httpx.Response) -> Any:
+        content = response.content
+        if response.status_code == 204 or not content:
+            if spec.expect_body:
+                raise NotFoundError(
+                    f"{response.status_code}: nothing found ({spec.method} {spec.path})",
+                    status=404,
+                    headers=response.headers,
+                    method=spec.method,
+                    url=str(response.request.url),
+                )
+            return None
+        try:
+            return decode_body(response.headers.get("content-type"), content)
+        except ValueError as error:
+            raise ResponseParseError(f"The response to {spec.method} {spec.path} was not valid JSON.", body=content) from error
+
+    async def send(self, spec: RequestSpec) -> httpx.Response:
+        """Sends ``spec`` with retries (idempotent calls only) and returns the 2xx response, or raises."""
+        attempt = 0
+        reauthenticate = False
+        timeout = spec.timeout if spec.timeout is not None else self.timeout
+        url = self.base_url + spec.path
+        while True:
+            headers: Dict[str, str] = {"Accept": spec.accept, "User-Agent": self.user_agent}
+            if spec.authorization is not None:
+                headers["Authorization"] = spec.authorization
+            elif spec.authenticated:
+                headers["Authorization"] = await self.authorization(force_refresh=reauthenticate)
+            try:
+                response = await self._http.request(
+                    spec.method,
+                    url,
+                    params=spec.query or None,
+                    json=None if spec.json is NO_BODY else spec.json,
+                    files=spec.files,
+                    headers=headers,
+                    timeout=timeout,
+                )
+            except httpx.TimeoutException as error:
+                if spec.retryable and attempt < self.max_retries:
+                    await _aio.sleep(retry_delay(attempt, rng=self._rng))
+                    attempt += 1
+                    continue
+                raise TimeoutError(f"{spec.method} {spec.path} timed out after {timeout:g}s") from error
+            except httpx.TransportError as error:
+                if spec.retryable and attempt < self.max_retries:
+                    await _aio.sleep(retry_delay(attempt, rng=self._rng))
+                    attempt += 1
+                    continue
+                raise ConnectionError(f"Could not reach {self.base_url} ({spec.method} {spec.path}): {error}") from error
+
+            status = response.status_code
+            if status in RETRY_STATUSES and spec.retryable and attempt < self.max_retries:
+                retry_after = retry_after_seconds(response.headers, _json_or_none(response))
+                await _aio.sleep(retry_delay(attempt, retry_after=retry_after, rng=self._rng))
+                attempt += 1
+                continue
+            if (
+                status == 401
+                and not reauthenticate
+                and spec.authenticated
+                and spec.authorization is None
+                and self.credentials.is_jwt
+            ):
+                # The token was refused before anything ran, so sending the call again is safe (even a start).
+                reauthenticate = True
+                continue
+            if not response.is_success:
+                raise error_for(
+                    status,
+                    response.headers,
+                    response.content,
+                    method=spec.method,
+                    url=str(response.request.url),
+                    reason=response.reason_phrase,
+                )
+            return response
+
+
+def _json_or_none(response: httpx.Response) -> Any:
+    try:
+        return decode_body(response.headers.get("content-type"), response.content)
+    except ValueError:
+        return None

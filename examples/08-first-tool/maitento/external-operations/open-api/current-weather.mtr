@@ -1,0 +1,6 @@
+// The tool: what the agent sees. Its name is the file's name, its description is the guidance, and its arguments
+// are the connector's parameters that nothing else fills in.
+connector = @ref("open-meteo-forecast")
+// A fixed value: Maitento adds it to every call, and the model never sees this parameter.
+bindings.query:current = "temperature_2m,wind_speed_10m,weather_code"
+guidance = "Gets the current temperature, the wind speed in km/h and the WMO weather code for a place. Work out the latitude and longitude of the place yourself before you call it. The response says which temperature unit it uses."

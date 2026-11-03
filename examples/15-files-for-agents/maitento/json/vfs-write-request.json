@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "content": { "type": "string", "description": "The whole new content of the file" }
+  },
+  "required": ["content"],
+  "additionalProperties": false
+}

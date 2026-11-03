@@ -1,0 +1,2 @@
+// Stop the app if it runs for more than a minute: a loop whose condition never turns false would run until then.
+duration.max = "00:01:00"

@@ -1,0 +1,14 @@
+agent = {
+  name = "Triager"
+  agent = @ref("triager")
+}
+task = @prompt("triage-task")
+inputs.prompts = [
+  {
+    name = "message"
+    description = "What the customer wrote"
+    required = true
+  }
+]
+// A typed answer the app reads straight into its ticket (tutorial 3).
+schema.solution = @json("ticket-triage")

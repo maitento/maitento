@@ -1,0 +1,49 @@
+// The newsletter app: it runs the headlines app as a child, and writes the opening line while the child works.
+string main(string topics) {
+	// region:start-child
+	// AppStart starts another app and returns its run id straight away, as InteractionStart does.
+	jsonObject childInputs = JsonObjectCreate();
+	childInputs = JsonObjectSetString(childInputs, "topics", topics);
+	guid childId = AppStart("headlines", childInputs);
+	PrintLine("Started the headlines app");
+	// endregion
+
+	// region:race
+	// While the child works, start two copies of the opener and keep whichever answers first. FirstAnswer is in
+	// race.mtc.
+	jsonObject openerInputs = JsonObjectCreate();
+	openerInputs = JsonObjectSetString(openerInputs, "topics", topics);
+	string opener = FirstAnswer("opener", openerInputs, 2);
+	PrintLine("Opening line: " + opener);
+	// endregion
+
+	// region:await-child
+	// Now wait for the child. AppProcessAwait returns its run, with its status, returnValue, outputs and failureDetails.
+	jsonObject child = AppProcessAwait(childId);
+	if (JsonObjectGet(child, "status") != "Finished") {
+		throw("The headlines app failed: " + JsonObjectGet(child, "failureDetails"));
+	}
+	PrintLine("The headlines app returned: " + JsonObjectGet(child, "returnValue"));
+	jsonArray headlines = OutputOf(child, "headlines");
+	// endregion
+
+	string newsletter = opener;
+	for (int i = 0; i < JsonArrayCount(headlines); i++) {
+		newsletter = newsletter + "\n- " + JsonArrayGetAtIndex(headlines, i);
+	}
+	return(newsletter);
+}
+
+// region:output-of
+// The value of one named output of a finished app run. The run's outputs are a list of { name, type, value, date }.
+string OutputOf(jsonObject run, string name) {
+	jsonArray outputs = JsonObjectGet(run, "outputs");
+	for (int i = 0; i < JsonArrayCount(outputs); i++) {
+		jsonObject output = JsonArrayGetAtIndex(outputs, i);
+		if (JsonObjectGet(output, "name") == name) {
+			return(JsonObjectGet(output, "value"));
+		}
+	}
+	throw("The run has no output called " + name);
+}
+// endregion

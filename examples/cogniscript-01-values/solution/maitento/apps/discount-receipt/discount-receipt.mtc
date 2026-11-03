@@ -1,0 +1,20 @@
+// The challenge: the receipt app with a discount, a percentage taken off the subtotal before tax.
+string main(string item, decimal price, int quantity, decimal discount) {
+	decimal subtotal = price * quantity;
+	decimal saving = MathRound(subtotal * discount / 100, 2);
+	decimal discounted = subtotal - saving;
+	decimal tax = MathRound(discounted * 0.2, 2);
+	decimal total = discounted + tax;
+
+	string name = StringToUpper(item);
+
+	PrintLine("RECEIPT");
+	PrintLine(quantity + " x " + name + " at " + DecimalToString(price, "0.00"));
+	PrintLine("Subtotal  " + StringPadLeft(DecimalToString(subtotal, "0.00"), 8, " "));
+	// StringPadRight fills the label out to ten characters, whatever the discount, so the amounts still line up.
+	PrintLine(StringPadRight("Less " + discount + "%", 10, " ") + StringPadLeft("-" + DecimalToString(saving, "0.00"), 8, " "));
+	PrintLine("Tax 20%   " + StringPadLeft(DecimalToString(tax, "0.00"), 8, " "));
+	PrintLine("Total     " + StringPadLeft(DecimalToString(total, "0.00"), 8, " "));
+
+	return(DecimalToString(total, "0.00"));
+}

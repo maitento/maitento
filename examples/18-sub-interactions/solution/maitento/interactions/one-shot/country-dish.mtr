@@ -1,0 +1,13 @@
+// A second kind of child: one famous dish of one country.
+agent = {
+  name = "CountryResearcher"
+  agent = @ref("country-researcher")
+}
+task = "Name one dish %%country%% is famous for, and describe it in one sentence."
+inputs.prompts = [
+  {
+    name = "country"
+    required = true
+  }
+]
+duration.max = "00:02:00"

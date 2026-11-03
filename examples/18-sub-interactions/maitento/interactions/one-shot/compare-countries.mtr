@@ -1,0 +1,21 @@
+agent = {
+  name = "LeadResearcher"
+  agent = @ref("lead-researcher")
+}
+task = "Compare these countries: %%countries%%. Start one country-facts interaction per country so they run in parallel, wait for them all, then write a short comparison."
+inputs.prompts = [
+  {
+    name = "countries"
+    description = "A comma-separated list of countries"
+    required = true
+  }
+]
+// The interactions this one may start as sub-runs, and how many at once.
+swarm = {
+  interactions = [
+    @ref("country-facts")
+  ]
+  maxConcurrent = 5
+  maxTotal = 10
+}
+duration.max = "00:05:00"

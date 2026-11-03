@@ -1,0 +1,12 @@
+// One agent, one answer: the message comes in as an input.
+agent = {
+  name = "Greeter"
+  agent = @ref("greeter")
+}
+task = "%%message%%"
+inputs.prompts = [
+  {
+    name = "message"
+    required = true
+  }
+]

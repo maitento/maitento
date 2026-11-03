@@ -1,0 +1,12 @@
+agent = {
+  name = "Guide"
+  agent = @ref("guide")
+}
+task = "Describe %%place%% for a first-time visitor in about 120 words."
+inputs.prompts = [
+  {
+    name = "place"
+    description = "A city, a town or a region"
+    required = true
+  }
+]

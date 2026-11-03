@@ -1,0 +1,23 @@
+{
+  "name": "add-feature",
+  "durationAutoTermination": "00:30:00",
+  "promptInputs": [
+    { "name": "request", "description": "The change to make, in plain words", "isRequired": true }
+  ],
+  "agents": [
+    { "name": "developer", "defaultEngine": "DeepSeek", "role": "Fullstack" }
+  ],
+  "phases": [
+    {
+      "name": "development",
+      "steps": [
+        {
+          "name": "implement",
+          "agentName": "developer",
+          "prompt": "@prompt(implement)",
+          "isCommitable": true
+        }
+      ]
+    }
+  ]
+}

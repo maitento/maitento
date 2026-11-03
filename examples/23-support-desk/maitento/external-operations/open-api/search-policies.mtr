@@ -1,0 +1,2 @@
+connector = @ref("knowledge-search")
+guidance = "Searches Acme Coffee's policies on returns, refunds and delivery. Use it before you promise a customer anything."

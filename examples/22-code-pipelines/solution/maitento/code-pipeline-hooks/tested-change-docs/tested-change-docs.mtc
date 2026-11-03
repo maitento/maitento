@@ -1,0 +1,21 @@
+// The challenge: once the tests pass, add a phase that updates the README.
+
+// The test phase's post hook: it reads the tester's report and decides what the pipeline does next.
+string TestGate(string processId, string methodName) {
+	string report = PipelineGetVariable(processId, "testReport");
+
+	// The tests pass: add one more phase, which updates the README.
+	if (StringContains(report, "EXIT CODE: 0", false)) {
+		PipelineSetVariable(processId, "testsPassed", "true");
+		string docs = "{\"name\": \"update-readme\", \"targetRole\": \"Fullstack\", \"prompt\": \"@promptJson(tested-change-docs/docs)\", \"isCommitable\": true}";
+		return("{\"decision\": \"inject\", \"injectPhases\": [{\"name\": \"docs\", \"steps\": [" + docs + "]}]}");
+	}
+
+	// They fail: loop back, as before.
+	PipelineSetVariable(processId, "testsPassed", "false");
+	string fix = "{\"name\": \"fix\", \"targetRole\": \"Fullstack\", \"prompt\": \"@promptJson(tested-change-docs/fix)\", \"isCommitable\": true}";
+	string retest = "{\"name\": \"run-tests\", \"targetRole\": \"Reviewer\", \"prompt\": \"@promptJson(tested-change-docs/run-tests)\", \"isNewSession\": true, \"outputVariableName\": \"testReport\"}";
+	string fixPhase = "{\"name\": \"fix\", \"steps\": [" + fix + "]}";
+	string retestPhase = "{\"name\": \"retest\", \"dependsOn\": [\"fix\"], \"postHook\": \"TestGate\", \"steps\": [" + retest + "]}";
+	return("{\"decision\": \"loop\", \"loop\": {\"blockingIssueCount\": 1, \"fixPhases\": [" + fixPhase + ", " + retestPhase + "]}}");
+}

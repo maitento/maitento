@@ -1,0 +1,29 @@
+// A managed interaction: the manager gets the task and hands out work.
+// Team members only see what the manager sends them.
+task = "Produce a three-paragraph newsletter about %%topic%% for a general audience."
+inputs.prompts = [
+  {
+    name = "topic"
+    required = true
+  }
+]
+manager = {
+  name = "Editor"
+  agent = @ref("editor")
+}
+agents = [
+  {
+    name = "Writer"
+    agent = @ref("writer")
+    // Private: the writer keeps its own ongoing conversation with the editor.
+    mode = "Private"
+  },
+  {
+    name = "FactChecker"
+    agent = @ref("fact-checker")
+    // OneTime: a fresh fact checker every time it is asked.
+    mode = "OneTime"
+  }
+]
+limits.maxDispatches = 8
+duration.max = "00:06:00"

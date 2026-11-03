@@ -1,0 +1,22 @@
+// The challenge: the total of a list of orders, each shaped like the tutorial's.
+string main(string orders) {
+	// A list arrives as text too. StringToJsonArray checks that the text is a JSON array.
+	jsonArray list = StringToJsonArray(orders);
+	int orderCount = JsonArrayCount(list);
+	decimal grandTotal = 0;
+	for (int i = 0; i < orderCount; i++) {
+		jsonObject order = JsonArrayGetAtIndex(list, i);
+		jsonArray items = JsonObjectGet(order, "items");
+		decimal orderTotal = 0;
+		for (int j = 0; j < JsonArrayCount(items); j++) {
+			jsonObject item = JsonArrayGetAtIndex(items, j);
+			orderTotal = orderTotal + JsonObjectGet(item, "quantity") * JsonObjectGet(item, "price");
+		}
+		PrintLine(JsonObjectGet(order, "id") + ": " + DecimalToString(orderTotal, "0.00"));
+		grandTotal = grandTotal + orderTotal;
+	}
+
+	AppStateSetOutputInteger("orderCount", orderCount);
+	AppStateSetOutputDecimal("grandTotal", grandTotal);
+	return(orderCount + " orders, " + DecimalToString(grandTotal, "0.00"));
+}

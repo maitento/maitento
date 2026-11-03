@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "title": { "type": "string" },
+    "servings": { "type": ["integer", "null"] },
+    "vegetarian": {
+      "type": "boolean",
+      "description": "True when none of the ingredients is meat or fish"
+    },
+    "ingredients": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item": { "type": "string" },
+          "quantity": { "type": ["string", "null"] }
+        },
+        "required": ["item", "quantity"],
+        "additionalProperties": false
+      }
+    },
+    "steps": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["title", "servings", "vegetarian", "ingredients", "steps"],
+  "additionalProperties": false
+}

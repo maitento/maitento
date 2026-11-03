@@ -1,0 +1,23 @@
+// Starts an interaction again after a run of it failed, up to retries more times, and returns the first answer.
+string RetryRun(string interaction, jsonObject inputs, int retries) {
+	string failure = "";
+	for (int retry = 1; retry <= retries; retry++) {
+		guid runId = InteractionStart(interaction, inputs, "[]", "[]", "");
+		jsonObject run = InteractionAwait(runId);
+		string status = JsonObjectGet(run, "status");
+		if (status == "Finished") {
+			return(JsonObjectGet(run, "output"));
+		}
+		failure = JsonObjectGet(run, "failureDetails");
+		PrintLine("  Retry " + retry + " of " + retries + " ended " + status + ": " + failure);
+		// Killed means someone stopped the run on purpose: don't start it again.
+		if (status == "Killed") {
+			throw(interaction + " was stopped: " + failure);
+		}
+		// Give a passing problem a moment to pass, a little longer each time.
+		if (retry < retries) {
+			Sleep(retry * 2000);
+		}
+	}
+	throw("Gave up on " + interaction + " after " + retries + " retries: " + failure);
+}

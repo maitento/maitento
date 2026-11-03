@@ -1,0 +1,13 @@
+// One customer's request: summarise the text they sent.
+agent = {
+  name = "Summariser"
+  agent = @ref("summariser")
+}
+task = "Summarise this: %%text%%"
+inputs.prompts = [
+  {
+    name = "text"
+    description = "The text to summarise"
+    required = true
+  }
+]

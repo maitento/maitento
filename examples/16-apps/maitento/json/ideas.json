@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "ideas": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Three short campaign angles"
+    }
+  },
+  "required": ["ideas"],
+  "additionalProperties": false
+}

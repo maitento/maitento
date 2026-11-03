@@ -1,0 +1,12 @@
+// Tutorial 9's support agent, now with a refund tool as well.
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You are a customer support agent for an online shop. Look orders up before you answer, and be precise about amounts."
+summary = "Handles order questions and refunds"
+functions = [
+  {
+    ref = @ref("get-order")
+  },
+  {
+    ref = @ref("refund-order")
+  }
+]

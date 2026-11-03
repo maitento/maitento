@@ -1,0 +1,9 @@
+{
+  "name": "maitento-example-01-hello-agent-solution",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "dependencies": {
+    "@maitento/sdk": "^26.10.0"
+  }
+}

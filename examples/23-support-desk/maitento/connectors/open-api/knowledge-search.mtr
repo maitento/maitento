@@ -1,0 +1,7 @@
+// Maitento's own search endpoint. auth = "Maitento" means Maitento signs the call itself,
+// so you never put a credential in this file.
+method = "PUT"
+url = "https://api.maitento.com/files/embeddings/search"
+description = "Searches a document library and returns the most relevant passages"
+schema.request = @json("knowledge-search-request")
+auth = "Maitento"

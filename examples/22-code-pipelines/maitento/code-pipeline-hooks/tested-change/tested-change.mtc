@@ -1,0 +1,22 @@
+// Hooks for the tested-change pipeline. Every function here takes (processId, methodName) and returns text.
+
+// The test phase's post hook: it reads the tester's report and decides what the pipeline does next.
+string TestGate(string processId, string methodName) {
+	string report = PipelineGetVariable(processId, "testReport");
+
+	// The tests pass: nothing more to do.
+	if (StringContains(report, "EXIT CODE: 0", false)) {
+		PipelineSetVariable(processId, "testsPassed", "true");
+		return("{\"decision\": \"done\"}");
+	}
+
+	// They fail: loop back. The developer fixes the code in its own session, with the report in its prompt, then
+	// the tests run again, with this same hook after them. maxFixIterations caps how many times.
+	PipelineSetVariable(processId, "testsPassed", "false");
+	PipelineLog(processId, "TestGate: the tests failed, looping back to the developer");
+	string fix = "{\"name\": \"fix\", \"targetRole\": \"Fullstack\", \"prompt\": \"@promptJson(tested-change/fix)\", \"isCommitable\": true}";
+	string retest = "{\"name\": \"run-tests\", \"targetRole\": \"Reviewer\", \"prompt\": \"@promptJson(tested-change/run-tests)\", \"isNewSession\": true, \"outputVariableName\": \"testReport\"}";
+	string fixPhase = "{\"name\": \"fix\", \"steps\": [" + fix + "]}";
+	string retestPhase = "{\"name\": \"retest\", \"dependsOn\": [\"fix\"], \"postHook\": \"TestGate\", \"steps\": [" + retest + "]}";
+	return("{\"decision\": \"loop\", \"loop\": {\"blockingIssueCount\": 1, \"fixPhases\": [" + fixPhase + ", " + retestPhase + "]}}");
+}

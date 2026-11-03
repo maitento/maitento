@@ -1,0 +1,12 @@
+agent = {
+  name = "Writer"
+  agent = @ref("writer")
+}
+task = "Write one welcoming sentence that opens a newsletter about these topics: %%topics%%. Reply with the sentence only."
+inputs.prompts = [
+  {
+    name = "topics"
+    required = true
+  }
+]
+duration.max = "00:01:00"

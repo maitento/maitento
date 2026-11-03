@@ -1,0 +1,25 @@
+agent = {
+  name = "WeatherBot"
+  agent = @ref("weather-bot")
+}
+task = "What is the weather like in %%city%% right now? Answer in one friendly sentence."
+inputs.prompts = [
+  {
+    name = "city"
+    description = "The city to check"
+    required = true
+  }
+]
+// A value each run supplies. It goes straight into the tool call: the agent never sees it and can't change it.
+inputs.functions.binding = [
+  {
+    name = "temperatureUnit"
+    description = "celsius or fahrenheit"
+    function = @ref("current-weather")
+    agent = @ref("weather-bot")
+    type = "query"
+    target = "temperature_unit"
+    required = false
+    default = "celsius"
+  }
+]

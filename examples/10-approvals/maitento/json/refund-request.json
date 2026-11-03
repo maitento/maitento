@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "amount": { "type": "number", "description": "Amount to refund, in the order's currency" },
+    "reason": { "type": "string", "description": "Why the customer is being refunded" }
+  },
+  "required": ["amount", "reason"],
+  "additionalProperties": false
+}

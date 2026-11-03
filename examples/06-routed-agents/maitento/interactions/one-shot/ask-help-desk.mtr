@@ -1,0 +1,11 @@
+agent = {
+  name = "HelpDesk"
+  agent = @ref("help-desk")
+}
+task = "%%question%%"
+inputs.prompts = [
+  {
+    name = "question"
+    required = true
+  }
+]

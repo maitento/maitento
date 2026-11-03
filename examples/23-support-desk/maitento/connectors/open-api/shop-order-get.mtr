@@ -1,0 +1,12 @@
+// The shop API your support desk app serves under /shop. Replace the host with your app's public
+// URL in all three shop-* connectors (see tutorial 9 for a free tunnel).
+method = "GET"
+url = "https://YOUR-SERVER.example.com/shop/orders/{orderId}"
+description = "Looks up one order by its id"
+auth = "Header"
+parameters.path = [
+  {
+    name = "orderId"
+    description = "The order id, for example A-1001"
+  }
+]

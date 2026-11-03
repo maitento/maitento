@@ -1,0 +1,19 @@
+{
+  "name": "maitento-example-11-webhooks-solution",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "receiver": "node receiver.ts"
+  },
+  "dependencies": {
+    "@maitento/sdk": "^26.10.0",
+    "express": "5.3.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.6",
+    "@types/node": "22.18.0"
+  }
+}

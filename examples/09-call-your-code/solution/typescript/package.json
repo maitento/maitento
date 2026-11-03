@@ -1,0 +1,20 @@
+{
+  "name": "maitento-example-09-call-your-code-solution",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "server": "node server.ts",
+    "track": "node track.ts"
+  },
+  "dependencies": {
+    "@maitento/sdk": "^26.10.0",
+    "express": "5.3.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.6",
+    "@types/node": "22.18.0"
+  }
+}

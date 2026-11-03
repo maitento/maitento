@@ -1,0 +1,21 @@
+{
+  "name": "maitento-example-23-support-desk",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "server": "node server.ts",
+    "setup": "node setup.ts",
+    "digest": "node digest.ts"
+  },
+  "dependencies": {
+    "@maitento/sdk": "^26.10.0",
+    "express": "5.3.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.6",
+    "@types/node": "22.18.0"
+  }
+}

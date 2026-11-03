@@ -1,0 +1,41 @@
+// An agent works in a sandbox: it chooses each command, the app runs it in a capsule and hands
+// back what it printed, until the agent can answer.
+string main(string question, string namespaceName) {
+	guid capsuleId = CapsuleStart("workbench", namespaceName, "[]", "[]", "[]");
+	jsonObject capsule = CapsuleWaitUntilStarted(capsuleId);
+	if (JsonObjectGet(capsule, "status") != "Running") {
+		throw("The capsule did not start: " + JsonObjectGet(capsule, "failureDetails"));
+	}
+
+	string transcript = "";
+	string answer = "";
+	for (int step = 1; step <= 6; step++) {
+		// Ask the analyst for the next command, with everything it has run so far.
+		jsonObject inputs = JsonObjectCreate();
+		inputs = JsonObjectSetString(inputs, "question", question);
+		inputs = JsonObjectSetString(inputs, "transcript", transcript);
+		jsonObject run = InteractionAwait(InteractionStart("next-command", inputs, "[]", "[]", ""));
+		if (JsonObjectGet(run, "status") != "Finished") {
+			CapsuleTerminate(capsuleId);
+			throw("The analyst failed: " + JsonObjectGet(run, "failureDetails"));
+		}
+		jsonObject next = StringToJsonObject(JsonObjectGet(run, "output"));
+		if (JsonObjectGet(next, "done") == "true") {
+			answer = JsonObjectGet(next, "answer");
+			break;
+		}
+
+		// Run the command in the capsule as the sandbox user, and wait for it to end.
+		string command = JsonObjectGet(next, "command");
+		guid commandId = CapsuleExec(capsuleId, command, "[]", "sandbox", 60000, false);
+		jsonObject result = CapsuleCommandAwait(capsuleId, commandId);
+		string output = "$ " + command + "\nexit code: " + JsonObjectGet(result, "exitCode") + "\n"
+			+ JsonObjectGet(result, "outputStandard") + JsonObjectGet(result, "outputError");
+		PrintLine(output);
+		transcript = transcript + output + "\n";
+	}
+
+	CapsuleTerminate(capsuleId);
+	AppStateSetOutputString("answer", answer);
+	return(answer);
+}

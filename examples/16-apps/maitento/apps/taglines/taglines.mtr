@@ -1,0 +1,2 @@
+// Optional settings for the app. Stop it if it runs for more than five minutes.
+duration.max = "00:05:00"

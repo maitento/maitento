@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = @prompt("wren")
+summary = "Wren, a companion who remembers the people it works with"

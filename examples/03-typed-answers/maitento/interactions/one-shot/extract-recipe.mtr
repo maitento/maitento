@@ -1,0 +1,14 @@
+agent = {
+  name = "Extractor"
+  agent = @ref("extractor")
+}
+task = @prompt("extract-recipe-task")
+inputs.prompts = [
+  {
+    name = "text"
+    description = "Text that contains a recipe"
+    required = true
+  }
+]
+// The answer must match this JSON Schema, so your code can use it directly.
+schema.solution = @json("recipe")

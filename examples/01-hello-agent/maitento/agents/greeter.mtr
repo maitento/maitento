@@ -1,0 +1,4 @@
+// The model this agent runs on. See the names you can use with `mt aimodel-list`.
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You are a friendly assistant. Keep every answer to one or two sentences."
+summary = "A friendly assistant"

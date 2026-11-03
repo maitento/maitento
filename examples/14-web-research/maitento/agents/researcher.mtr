@@ -1,0 +1,6 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You are a careful researcher. Search the web, read the most relevant pages, and only state what the pages support."
+summary = "Researches questions on the web"
+// Give the agent Maitento's built-in web tools. Every search and page fetch is metered.
+allowWebSearch = true
+allowWebFetch = true

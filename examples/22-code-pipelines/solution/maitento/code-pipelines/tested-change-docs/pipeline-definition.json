@@ -1,0 +1,39 @@
+{
+  "name": "tested-change-docs",
+  "durationAutoTermination": "00:45:00",
+  "maxFixIterations": 2,
+  "promptInputs": [
+    { "name": "request", "description": "The change to make, in plain words", "isRequired": true }
+  ],
+  "agents": [
+    { "name": "developer", "defaultEngine": "DeepSeek", "role": "Fullstack" },
+    { "name": "tester", "defaultEngine": "DeepSeek", "role": "Reviewer" }
+  ],
+  "phases": [
+    {
+      "name": "implement",
+      "steps": [
+        {
+          "name": "implement",
+          "agentName": "developer",
+          "prompt": "@prompt(implement)",
+          "isCommitable": true
+        }
+      ]
+    },
+    {
+      "name": "test",
+      "dependsOn": ["implement"],
+      "postHook": "TestGate",
+      "steps": [
+        {
+          "name": "run-tests",
+          "agentName": "tester",
+          "prompt": "@prompt(run-tests)",
+          "isNewSession": true,
+          "outputVariableName": "testReport"
+        }
+      ]
+    }
+  ]
+}

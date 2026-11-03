@@ -1,0 +1,27 @@
+// A capsule that stays up (no autoTerminate), so commands can be sent to it one at a time.
+maxDuration = "00:10:00"
+
+vfs = [
+  {
+    vfs = @ref("sales-data")
+    mountName = "data"
+  }
+]
+
+// The commands the agent chooses run as this user. The capsule's default user is signed in to
+// Maitento as you, and an agent's commands don't need that.
+users = [
+  {
+    name = "sandbox"
+  }
+]
+
+// A mounted file system is for the default user only, so give the sandbox user a copy it can read.
+startup = [
+  {
+    command = "bash"
+    arguments = ["-c", "rm -rf /tmp/data && cp -r /mnt/data /tmp/data && chmod -R a+rwX /tmp/data"]
+    wait = true
+    maxDuration = "00:01:00"
+  }
+]

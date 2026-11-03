@@ -1,0 +1,10 @@
+method = "GET"
+url = "https://YOUR-SERVER.example.com/shop/tickets/{date}"
+description = "Lists the support tickets of one day"
+auth = "Header"
+parameters.path = [
+  {
+    name = "date"
+    description = "The day, as yyyy-MM-dd"
+  }
+]

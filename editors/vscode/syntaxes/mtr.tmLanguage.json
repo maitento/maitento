@@ -1,0 +1,81 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Maitento resource",
+  "scopeName": "source.mtr",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#property" },
+    { "include": "#value" }
+  ],
+  "repository": {
+    "comment": {
+      "comment": "// starts a comment only where a word could start.",
+      "match": "(?:^|(?<=[\\s\\[\\]{}(),]))//.*$",
+      "name": "comment.line.double-slash.mtr"
+    },
+    "property": {
+      "comment": "A property name before ` = `, with a map key after a colon (bindings.query:units).",
+      "match": "(?:^|(?<=[\\s{\\[(,]))([A-Za-z_][\\w.\\-]*)(?:(:)([^\\s\\[\\]{}(),]*))?\\s+(=)(?=\\s|$)",
+      "captures": {
+        "1": { "name": "variable.other.property.mtr" },
+        "2": { "name": "punctuation.separator.key-value.mtr" },
+        "3": { "name": "entity.name.tag.key.mtr" },
+        "4": { "name": "keyword.operator.assignment.mtr" }
+      }
+    },
+    "value": {
+      "patterns": [
+        { "include": "#string" },
+        { "include": "#directive" },
+        { "include": "#number" },
+        { "include": "#boolean" },
+        { "include": "#punctuation" }
+      ]
+    },
+    "string": {
+      "begin": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.mtr" } },
+      "end": "\"",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.mtr" } },
+      "name": "string.quoted.double.mtr",
+      "patterns": [
+        { "match": "\\\\.", "name": "constant.character.escape.mtr" },
+        { "match": "%%[^%\\s]+%%", "name": "variable.other.placeholder.mtr" },
+        { "match": "\\{\\{[#/]?(?:if|unless)\\b[^}]*\\}\\}", "name": "keyword.control.template.mtr" }
+      ]
+    },
+    "directive": {
+      "comment": "@ref(...), @prompt(...), @json(...): an id inside @ref(...) is a constant.",
+      "begin": "(@)\\s*(ref|prompt|json)\\b\\s*(\\()",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.directive.mtr" },
+        "2": { "name": "keyword.control.directive.mtr" },
+        "3": { "name": "punctuation.section.parens.begin.mtr" }
+      },
+      "end": "\\)",
+      "endCaptures": { "0": { "name": "punctuation.section.parens.end.mtr" } },
+      "patterns": [
+        { "include": "#string" },
+        { "match": "[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}", "name": "constant.other.guid.mtr" },
+        { "match": ",", "name": "punctuation.separator.comma.mtr" }
+      ]
+    },
+    "number": {
+      "match": "(?:^|(?<=[\\s\\[\\]{}(),]))[+-]?(?:\\d+\\.?\\d*|\\.\\d+)(?=$|[\\s\\[\\]{}(),])",
+      "name": "constant.numeric.mtr"
+    },
+    "boolean": {
+      "match": "(?:^|(?<=[\\s\\[\\]{}(),]))(?i:true|false)(?=$|[\\s\\[\\]{}(),])",
+      "name": "constant.language.boolean.mtr"
+    },
+    "punctuation": {
+      "patterns": [
+        { "match": "\\{", "name": "punctuation.section.block.begin.mtr" },
+        { "match": "\\}", "name": "punctuation.section.block.end.mtr" },
+        { "match": "\\[", "name": "punctuation.section.brackets.begin.mtr" },
+        { "match": "\\]", "name": "punctuation.section.brackets.end.mtr" },
+        { "match": ",", "name": "punctuation.separator.comma.mtr" }
+      ]
+    }
+  }
+}

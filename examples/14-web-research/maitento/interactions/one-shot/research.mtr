@@ -1,0 +1,15 @@
+agent = {
+  name = "Researcher"
+  agent = @ref("researcher")
+}
+task = @prompt("research-task")
+inputs.prompts = [
+  {
+    name = "question"
+    description = "What to research"
+    required = true
+  }
+]
+// Research can take a while: warn the agent at 2 minutes and stop at 4.
+duration.warn = "00:02:00"
+duration.max = "00:04:00"

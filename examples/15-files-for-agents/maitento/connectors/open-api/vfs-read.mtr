@@ -1,0 +1,16 @@
+method = "GET"
+url = "https://api.maitento.com/vfs/by-id/{id}/files/contents/text"
+description = "Reads a text file from a virtual file system"
+auth = "Maitento"
+parameters.path = [
+  {
+    name = "id"
+    description = "The virtual file system id"
+  }
+]
+parameters.query = [
+  {
+    name = "path"
+    description = "The file to read, for example /shopping.md"
+  }
+]

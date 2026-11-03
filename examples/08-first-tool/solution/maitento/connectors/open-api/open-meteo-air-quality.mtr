@@ -1,0 +1,20 @@
+// Open-Meteo's air-quality API: free, and no key, like the forecast.
+method = "GET"
+url = "https://air-quality-api.open-meteo.com/v1/air-quality"
+description = "Current air quality for a latitude and longitude, from Open-Meteo"
+parameters.query = [
+  {
+    name = "latitude"
+    description = "Latitude in decimal degrees, for example 51.5072"
+    type = "number"
+  },
+  {
+    name = "longitude"
+    description = "Longitude in decimal degrees, for example -0.1276"
+    type = "number"
+  },
+  {
+    name = "current"
+    description = "Comma-separated list of current air-quality variables"
+  }
+]

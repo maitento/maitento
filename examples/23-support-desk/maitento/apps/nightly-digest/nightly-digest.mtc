@@ -1,0 +1,27 @@
+// The nightly digest. It fetches the day's tickets from your app, keeps them in the desk's file
+// system, and runs a capsule that turns them into a report.
+// main's parameter is the app's input: the namespace the file system and the capsule live in.
+string main(string namespaceName) {
+	string day = DateTimeToString(DateGetUtc(), "yyyy-MM-dd");
+
+	// Call your app through the list-tickets tool: Maitento adds the secret, as it does for the agent's tools.
+	jsonObject path = JsonObjectCreate();
+	path = JsonObjectSetString(path, "date", day);
+	string response = ExtOpInvoke("list-tickets", "", "", path, "");
+	jsonArray tickets = JsonObjectGet(StringToJsonObject(response), "tickets");
+	PrintLine("Tickets on " + day + ": " + JsonArrayCount(tickets));
+
+	// Save them where the capsule can read them.
+	VfsWriteText("support-desk", namespaceName, "/tickets/" + day + ".json", response);
+
+	// The capsule mounts the file system, counts the tickets and writes the report beside them.
+	guid capsuleId = CapsuleStart("ticket-report", namespaceName, "[]", "[]", "[]");
+	jsonObject capsule = CapsuleAwait(capsuleId);
+	if (JsonObjectGet(capsule, "status") != "Finished") {
+		throw("The ticket-report capsule ended " + JsonObjectGet(capsule, "status"));
+	}
+
+	string report = VfsReadText("support-desk", namespaceName, "/reports/latest.md");
+	AppStateSetOutputString("report", report);
+	return("Digest written for " + day);
+}

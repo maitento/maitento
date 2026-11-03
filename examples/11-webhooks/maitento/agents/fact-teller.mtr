@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You tell people surprising, true facts. Answer in one sentence."
+summary = "Tells one surprising fact"

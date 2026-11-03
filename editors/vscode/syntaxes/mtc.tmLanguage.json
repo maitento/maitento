@@ -1,0 +1,100 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Cogniscript",
+  "scopeName": "source.mtc",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#string" },
+    { "include": "#file-include" },
+    { "include": "#number" },
+    { "include": "#keyword" },
+    { "include": "#type" },
+    { "include": "#boolean" },
+    { "include": "#invalid-name" },
+    { "include": "#call" },
+    { "include": "#operator" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comment": {
+      "comment": "// runs to the end of the line. There are no /* */ comments.",
+      "match": "//.*$",
+      "name": "comment.line.double-slash.mtc"
+    },
+    "string": {
+      "comment": "Text is in double quotes only, and may run over several lines.",
+      "begin": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.mtc" } },
+      "end": "\"",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.mtc" } },
+      "name": "string.quoted.double.mtc",
+      "patterns": [
+        {
+          "comment": "The escapes Cogniscript reads: \\a \\b \\e \\f \\n \\r \\t \\v, \\x41, \\u00e9, octal \\0 to \\777, \\cA, and a backslash before a mark that isn't a letter, digit or _, which is the mark itself.",
+          "match": "\\\\(?:[0-7]{1,3}|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[abefnrtv]|\\W)",
+          "name": "constant.character.escape.mtc"
+        },
+        {
+          "comment": "Any other escape, such as \\d or \\_, fails the deploy: write \\\\d.",
+          "match": "\\\\.",
+          "name": "invalid.illegal.unknown-escape.mtc"
+        },
+        {
+          "comment": "Code-pipeline hooks only: mt and the SDKs replace @promptJson(pipeline/name) and @schemaJson(pipeline/name) wherever they appear in a hook's file, before it is compiled. In an app they are plain text. A grammar can't tell a hook from an app, so they are marked in every .mtc, but only inside text, the one place they are useful.",
+          "match": "@(?:promptJson|schemaJson)\\([^)]+\\)",
+          "name": "keyword.control.directive.mtc"
+        }
+      ]
+    },
+    "file-include": {
+      "comment": "@prompt(\"name\") and @json(\"name\"): the text of prompts/name.md or json/name.json, put into the program when it is compiled, in an app or a hook. In any case, with spaces allowed. Inside text it is plain text, which the string rule takes first.",
+      "match": "(@)\\s*((?i:prompt|json))\\s*(\\()\\s*(\"[^\"]*\")\\s*(\\))",
+      "captures": {
+        "1": { "name": "keyword.control.directive.mtc" },
+        "2": { "name": "keyword.control.directive.mtc" },
+        "3": { "name": "meta.brace.mtc" },
+        "4": { "name": "string.quoted.double.mtc" },
+        "5": { "name": "meta.brace.mtc" }
+      }
+    },
+    "number": {
+      "comment": "Digits with at most one decimal point, which may come first or last: 42, 19.99, .5, 5. No exponent, hex or separators.",
+      "match": "(?<![\\w.])(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?![\\w.])",
+      "name": "constant.numeric.mtc"
+    },
+    "keyword": {
+      "match": "\\b(?:if|else|for|while|break|continue|try|catch|return|exit|throw)\\b",
+      "name": "keyword.control.mtc"
+    },
+    "type": {
+      "match": "\\b(?:int|decimal|string|bool|guid|date|jsonObject|jsonArray|void)\\b",
+      "name": "storage.type.mtc"
+    },
+    "boolean": {
+      "match": "\\b(?:true|false)\\b",
+      "name": "constant.language.boolean.mtc"
+    },
+    "invalid-name": {
+      "comment": "A name is letters and digits, and may start with _ or a digit. An underscore after the first character fails the deploy, so retry_count is marked.",
+      "match": "\\b\\w+?_\\w*",
+      "name": "invalid.illegal.name.mtc"
+    },
+    "call": {
+      "match": "\\b(_?[^\\W_]+)\\s*(?=\\()",
+      "captures": { "1": { "name": "entity.name.function.mtc" } }
+    },
+    "operator": {
+      "comment": "A single | or & is not an operator.",
+      "match": "\\+=|-=|\\*=|/=|%=|\\+\\+|--|>=|<=|!=|==|&&|\\|\\||[=+\\-*/%!<>]",
+      "name": "keyword.operator.mtc"
+    },
+    "punctuation": {
+      "comment": "Cogniscript has no square brackets.",
+      "patterns": [
+        { "match": ";", "name": "punctuation.terminator.statement.mtc" },
+        { "match": ",", "name": "punctuation.separator.comma.mtc" },
+        { "match": "[{}()]", "name": "meta.brace.mtc" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# What the Dockerfiles leave out of the build: dependencies, build output and each backend's local state.
+**/node_modules
+**/bin
+**/obj
+**/__pycache__
+**/.venv
+**/desk.json

@@ -1,0 +1,18 @@
+// Three connectors to Maitento's own file system (VFS) API. auth = "Maitento" means
+// Maitento signs each call for the run, so no credential goes in these files.
+method = "GET"
+url = "https://api.maitento.com/vfs/by-id/{id}/directories/contents"
+description = "Lists the files and folders in a folder of a virtual file system"
+auth = "Maitento"
+parameters.path = [
+  {
+    name = "id"
+    description = "The virtual file system id"
+  }
+]
+parameters.query = [
+  {
+    name = "path"
+    description = "The folder to list, for example /"
+  }
+]

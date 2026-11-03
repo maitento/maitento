@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You write clear, lively newsletter sections exactly as the editor asks."
+summary = "Writes newsletter sections"

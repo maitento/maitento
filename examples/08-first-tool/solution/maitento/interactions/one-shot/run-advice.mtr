@@ -1,0 +1,24 @@
+agent = {
+  name = "WeatherBot"
+  agent = @ref("weather-bot")
+}
+task = "Is now a good time to go for a run in %%city%%? Check the weather and the air, then answer in two sentences."
+inputs.prompts = [
+  {
+    name = "city"
+    description = "The city to check"
+    required = true
+  }
+]
+inputs.functions.binding = [
+  {
+    name = "temperatureUnit"
+    description = "celsius or fahrenheit"
+    function = @ref("current-weather")
+    agent = @ref("weather-bot")
+    type = "query"
+    target = "temperature_unit"
+    required = false
+    default = "celsius"
+  }
+]

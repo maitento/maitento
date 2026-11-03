@@ -1,0 +1,9 @@
+{
+  "name": "maitento-example-06-routed-agents-solution",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "dependencies": {
+    "@maitento/sdk": "^26.10.0"
+  }
+}

@@ -1,0 +1,2 @@
+// Stop the app if it runs for more than ten minutes.
+duration.max = "00:10:00"

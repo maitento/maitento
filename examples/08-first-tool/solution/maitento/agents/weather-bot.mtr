@@ -1,0 +1,11 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You answer questions about the weather and the air outside. Always check with your tools before you answer."
+summary = "Answers weather and air-quality questions"
+functions = [
+  {
+    ref = @ref("current-weather")
+  },
+  {
+    ref = @ref("current-air-quality")
+  }
+]

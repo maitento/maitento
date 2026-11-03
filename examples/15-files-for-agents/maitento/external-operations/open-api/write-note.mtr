@@ -1,0 +1,2 @@
+connector = @ref("vfs-write")
+guidance = "Creates or replaces one note. Notes are Markdown files in the root folder, named like /shopping.md."

@@ -1,0 +1,11 @@
+// Your API's tracking endpoint. Replace the host with your server's public URL, as in orders-get.mtr.
+method = "GET"
+url = "https://YOUR-SERVER.example.com/orders/{orderId}/tracking"
+description = "Where a shipped order is: its carrier, tracking number and estimated delivery date"
+auth = "Header"
+parameters.path = [
+  {
+    name = "orderId"
+    description = "The order id, for example A-1001"
+  }
+]

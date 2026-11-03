@@ -1,0 +1,30 @@
+agent = {
+  name = "HandbookAssistant"
+  agent = @ref("handbook-assistant")
+}
+task = "An employee asks: %%question%%"
+inputs.prompts = [
+  {
+    name = "question"
+    description = "The employee's question"
+    required = true
+  }
+]
+functions.openApi = [
+  {
+    name = "search-handbook"
+    ref = @ref("search-handbook")
+  }
+]
+// A run input, partitionId, goes straight into the tool's request body.
+// The model never sees it or chooses it: it only writes the query.
+inputs.functions.binding = [
+  {
+    function = @ref("search-handbook")
+    name = "partitionId"
+    target = "partitionId"
+    description = "The knowledge base to search"
+    required = true
+    type = "request"
+  }
+]

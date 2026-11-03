@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 560" width="880" height="560" role="img" aria-labelledby="title desc">
+  <title id="title">How the support desk fits together</title>
+  <desc id="desc">Three parts. The browser shows the support console and talks to your app through a JSON API; your app pushes every change back to it as live events. Your app (server.ts, server.py or server.cs) serves the page under /api, takes Maitento's webhook at /maitento/webhook, and serves the shop's orders under /shop, and keeps tickets in desk.json. Maitento holds the project: triage-ticket, a one-shot interaction with a typed answer, which your app runs for each ticket; draft-reply, the desk agent with one memory per customer, which your app starts and approves, and whose tools find-order and issue-refund call your app's /shop with the shop-api-key secret, while search-policies searches the shop-policies knowledge base and the agent also searches and reads the web; and nightly-digest, an app that an automation runs every night at 23:55 UTC, which calls list-tickets on your app, saves the tickets in the support-desk file system and runs the ticket-report capsule. Maitento sends a webhook to your app whenever a run changes.</desc>
+  <!-- A self-contained dark panel in the Maitento Portal's dark palette (maitento/portal/src/styles/_tokens.scss), so it
+       reads the same on the site in either theme and on GitHub. System fonts only: an <img> cannot load web fonts.
+       Indigo arrows are calls into Maitento; caramel arrows are Maitento calling your app. -->
+  <defs>
+    <marker id="to-mt" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8193f8"/>
+    </marker>
+    <marker id="to-app" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#e5995f"/>
+    </marker>
+    <marker id="plain" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8a8c99"/>
+    </marker>
+  </defs>
+  <rect x="0.5" y="0.5" width="879" height="559" rx="16" fill="#141416" stroke="#2a2a30"/>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <!-- The browser -->
+    <rect x="24" y="120" width="164" height="136" rx="12" fill="#1b1b1f" stroke="#5a4130"/>
+    <text x="42" y="152" font-size="17" font-weight="600" fill="#f2f2f4">Browser</text>
+    <text x="42" y="174" font-size="13" fill="#a6a7b0">the support console</text>
+    <text x="42" y="200" font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace" font-size="12.5" fill="#e8b48e">web/</text>
+    <text x="42" y="222" font-size="12.5" fill="#a6a7b0">inbox · ticket · digest</text>
+    <text x="42" y="240" font-size="12.5" fill="#a6a7b0">approve or reject</text>
+
+    <!-- Browser to app -->
+    <path d="M190 176 H234" stroke="#8a8c99" stroke-width="1.8" fill="none" marker-end="url(#plain)"/>
+    <path d="M234 198 H190" stroke="#8a8c99" stroke-width="1.8" fill="none" marker-end="url(#plain)"/>
+    <text x="212" y="166" font-size="11.5" fill="#a6a7b0" text-anchor="middle">JSON</text>
+    <text x="212" y="218" font-size="11.5" fill="#a6a7b0" text-anchor="middle">SSE</text>
+
+    <!-- Your app -->
+    <rect x="240" y="90" width="196" height="440" rx="12" fill="#1b1b1f" stroke="#5a4130"/>
+    <text x="258" y="122" font-size="17" font-weight="600" fill="#f2f2f4">Your app</text>
+    <text x="258" y="143" font-size="12.5" fill="#a6a7b0">TypeScript, Python or C#</text>
+    <g font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace" font-size="12.5">
+      <rect x="256" y="160" width="164" height="44" rx="9" fill="#222228" stroke="#3a3a42"/>
+      <text x="268" y="179" fill="#e8b48e">/api</text>
+      <text x="268" y="196" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#a6a7b0">the page's API and events</text>
+      <rect x="256" y="306" width="164" height="44" rx="9" fill="#222228" stroke="#3a3a42"/>
+      <text x="268" y="325" fill="#e8b48e">/maitento/webhook</text>
+      <text x="268" y="342" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#a6a7b0">every change to a run</text>
+      <rect x="256" y="230" width="164" height="62" rx="9" fill="#222228" stroke="#3a3a42"/>
+      <text x="268" y="249" fill="#e8b48e">/shop</text>
+      <text x="268" y="266" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#a6a7b0">orders, refunds, tickets</text>
+      <text x="268" y="282" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#a6a7b0">checks X-Api-Key</text>
+      <rect x="256" y="462" width="164" height="44" rx="9" fill="none" stroke="#3a3a42" stroke-dasharray="4 3"/>
+      <text x="268" y="481" fill="#dcdde3">desk.json</text>
+      <text x="268" y="498" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#a6a7b0">tickets and orders</text>
+    </g>
+
+    <!-- Your app to Maitento (indigo) and back (caramel) -->
+    <g font-size="12" text-anchor="middle">
+      <path d="M438 120 H574" stroke="#8193f8" stroke-width="2" fill="none" marker-end="url(#to-mt)"/>
+      <text x="506" y="111" fill="#a9b6fb">run, for each ticket</text>
+
+      <path d="M438 186 H574" stroke="#8193f8" stroke-width="2" fill="none" marker-end="url(#to-mt)"/>
+      <text x="506" y="177" fill="#a9b6fb">start · approve · reject</text>
+      <text x="506" y="204" fill="#8a8c99">read the memory</text>
+
+      <path d="M574 328 H438" stroke="#e5995f" stroke-width="2" fill="none" marker-end="url(#to-app)"/>
+      <text x="506" y="319" fill="#efc09a">webhook</text>
+      <text x="506" y="345" fill="#8a8c99">replies and the digest</text>
+
+      <path d="M574 262 H438" stroke="#e5995f" stroke-width="2" fill="none" marker-end="url(#to-app)"/>
+      <text x="506" y="253" fill="#efc09a">find-order, issue-refund</text>
+
+      <path d="M574 410 H438" stroke="#e5995f" stroke-width="2" fill="none" marker-end="url(#to-app)"/>
+      <text x="506" y="401" fill="#efc09a">list-tickets, to <tspan font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace">/shop</tspan></text>
+
+      <path d="M438 470 H574" stroke="#8193f8" stroke-width="2" fill="none" marker-end="url(#to-mt)"/>
+      <text x="506" y="461" fill="#a9b6fb">run digest now</text>
+    </g>
+
+    <!-- Maitento -->
+    <rect x="580" y="24" width="276" height="512" rx="12" fill="#1b1b1f" stroke="#3b3f7a"/>
+    <text x="598" y="54" font-size="17" font-weight="600" fill="#f2f2f4">Maitento</text>
+    <text x="598" y="74" font-size="12.5" fill="#a6a7b0">the project in <tspan font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace" fill="#c3cbfc">maitento/</tspan></text>
+
+    <g font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace">
+      <!-- triage-ticket -->
+      <rect x="594" y="92" width="248" height="52" rx="10" fill="#222228" stroke="#33333a"/>
+      <text x="608" y="114" font-size="13.5" font-weight="600" fill="#c3cbfc">triage-ticket</text>
+      <text x="608" y="133" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#a6a7b0">one-shot, a typed answer</text>
+
+      <!-- draft-reply -->
+      <rect x="594" y="156" width="248" height="200" rx="10" fill="#222228" stroke="#33333a"/>
+      <text x="608" y="178" font-size="13.5" font-weight="600" fill="#c3cbfc">draft-reply</text>
+      <text x="608" y="197" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#a6a7b0">the desk agent, a memory per customer</text>
+      <g font-size="12">
+        <rect x="608" y="208" width="220" height="24" rx="12" fill="#1b1b1f" stroke="#3a3a42"/>
+        <text x="620" y="224" fill="#dcdde3">find-order</text>
+        <rect x="608" y="238" width="220" height="24" rx="12" fill="rgba(240,180,92,0.10)" stroke="#a37b3b"/>
+        <text x="620" y="254" fill="#dcdde3">issue-refund <tspan font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" fill="#f0c06e">· needs approval</tspan></text>
+        <rect x="608" y="268" width="220" height="24" rx="12" fill="#1b1b1f" stroke="#3a3a42"/>
+        <text x="620" y="284" fill="#dcdde3">search-policies <tspan fill="#8a8c99">→</tspan> <tspan font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" fill="#a6a7b0">policies</tspan></text>
+        <rect x="608" y="298" width="220" height="24" rx="12" fill="#1b1b1f" stroke="#3a3a42"/>
+        <text x="620" y="314" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" fill="#dcdde3">web search and fetch</text>
+        <rect x="608" y="328" width="220" height="24" rx="12" fill="#1b1b1f" stroke="#3a3a42"/>
+        <text x="620" y="344" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" fill="#dcdde3">memory: <tspan font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace">LoomWeave</tspan></text>
+      </g>
+
+      <!-- nightly-digest -->
+      <rect x="594" y="368" width="248" height="154" rx="10" fill="#222228" stroke="#33333a"/>
+      <text x="608" y="390" font-size="13.5" font-weight="600" fill="#c3cbfc">nightly-digest</text>
+      <text x="608" y="409" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#a6a7b0">an app, run every night at 23:55 UTC</text>
+      <g font-size="12">
+        <rect x="608" y="420" width="220" height="24" rx="12" fill="#1b1b1f" stroke="#3a3a42"/>
+        <text x="620" y="436" fill="#dcdde3">list-tickets</text>
+        <rect x="608" y="450" width="220" height="24" rx="12" fill="#1b1b1f" stroke="#3a3a42"/>
+        <text x="620" y="466" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" fill="#dcdde3">file system <tspan font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace">support-desk</tspan></text>
+        <rect x="608" y="480" width="220" height="24" rx="12" fill="#1b1b1f" stroke="#3a3a42"/>
+        <text x="620" y="496" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" fill="#dcdde3">capsule <tspan font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace">ticket-report</tspan></text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Key -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12">
+    <path d="M24 40 H52" stroke="#8193f8" stroke-width="2" marker-end="url(#to-mt)"/>
+    <text x="60" y="44" fill="#a6a7b0">your app calls Maitento</text>
+    <path d="M24 64 H52" stroke="#e5995f" stroke-width="2" marker-end="url(#to-app)"/>
+    <text x="60" y="68" fill="#a6a7b0">Maitento calls your app</text>
+  </g>
+</svg>

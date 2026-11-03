@@ -1,0 +1,11 @@
+// Replace the host with your orders API's public URL: the tunnel address from tutorial 9.
+method = "GET"
+url = "https://YOUR-SERVER.example.com/orders/{orderId}"
+description = "Looks up one order by its id"
+auth = "Header"
+parameters.path = [
+  {
+    name = "orderId"
+    description = "The order id, for example A-1001"
+  }
+]

@@ -1,0 +1,55 @@
+// The headlines app: one headline per topic, written in batches so that no more than two run at once.
+string main(string topics) {
+	jsonArray list = StringSplit(topics, ",", true);
+	int count = JsonArrayCount(list);
+	if (StringTrim(topics) == "") {
+		throw("Send at least one topic. Separate topics with commas.");
+	}
+
+	// region:batches
+	int batchSize = 2;
+	jsonArray headlines = JsonArrayCreate();
+	for (int first = 0; first < count; first = first + batchSize) {
+		// Start one run per topic in this batch. InteractionStart doesn't wait, so they run at the same time.
+		jsonArray runIds = JsonArrayCreate();
+		jsonObject topicOf = JsonObjectCreate();
+		for (int i = first; i < first + batchSize && i < count; i++) {
+			string topic = StringTrim(JsonArrayGetAtIndex(list, i));
+			guid runId = InteractionStart("headline", TopicInputs(topic), "[]", "[]", "");
+			runIds = JsonArrayAdd(runIds, runId);
+			// Runs can come back in any order, so remember which topic each run is for.
+			topicOf = JsonObjectSetString(topicOf, runId, topic);
+		}
+		PrintLine("Batch of " + JsonArrayCount(runIds) + " started");
+
+		// Wait for the whole batch before the next one starts.
+		jsonArray runs = InteractionAwaitAll(runIds);
+		for (int j = 0; j < JsonArrayCount(runs); j++) {
+			jsonObject run = JsonArrayGetAtIndex(runs, j);
+			string topic = JsonObjectGet(topicOf, JsonObjectGet(run, "id"));
+			string status = JsonObjectGet(run, "status");
+			string headline = JsonObjectGet(run, "output");
+			if (status == "Error") {
+				// A failed run may work next time. RetryRun is in retry.mtc.
+				PrintLine("Retrying " + topic + ": " + JsonObjectGet(run, "failureDetails"));
+				jsonObject inputs = TopicInputs(topic);
+				headline = RetryRun("headline", inputs, 2);
+			} else if (status != "Finished") {
+				throw("The headline run for " + topic + " was stopped.");
+			}
+			PrintLine("- " + topic + ": " + headline);
+			headlines = JsonArrayAdd(headlines, headline);
+		}
+	}
+	// endregion
+
+	AppStateSetOutputJsonArray("headlines", headlines);
+	return(JsonArrayCount(headlines) + " headlines");
+}
+
+// The inputs of one headline run.
+jsonObject TopicInputs(string topic) {
+	jsonObject inputs = JsonObjectCreate();
+	inputs = JsonObjectSetString(inputs, "topic", topic);
+	return(inputs);
+}

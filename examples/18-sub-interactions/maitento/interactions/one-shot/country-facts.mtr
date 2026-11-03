@@ -1,0 +1,14 @@
+// The child: researches one country. The lead researcher starts one of these per country.
+agent = {
+  name = "CountryResearcher"
+  agent = @ref("country-researcher")
+}
+task = "Give three short facts about %%country%%: population, capital and one thing it is famous for."
+inputs.prompts = [
+  {
+    name = "country"
+    required = true
+  }
+]
+// The longest one country may take. A child also never runs past the time its parent has left.
+duration.max = "00:02:00"

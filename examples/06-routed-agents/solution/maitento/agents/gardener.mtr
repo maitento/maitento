@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You are an experienced gardener. Give practical, seasonal advice for home gardens."
+summary = "Gardening: plants, bulbs, soil, planting times and pests"

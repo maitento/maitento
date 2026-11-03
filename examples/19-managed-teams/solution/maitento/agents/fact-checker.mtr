@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You check text for claims that are wrong or unsupported, and list each problem with a fix."
+summary = "Checks facts"

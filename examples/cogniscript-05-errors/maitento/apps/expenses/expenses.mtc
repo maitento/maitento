@@ -1,0 +1,42 @@
+// The expenses app: it checks its inputs, adds up every expense it can read, and reports the ones it can't.
+string main(string expenses, string limit) {
+	// region:check
+	// Check the inputs before doing any work. CheckInputs and ReadLimit are in checks.mtc.
+	CheckInputs(expenses);
+	decimal max = ReadLimit(limit);
+	// endregion
+
+	// region:loop
+	// One bad entry shouldn't sink the whole claim: catch its error, note it, and carry on.
+	jsonArray entries = StringSplit(expenses, ";", true);
+	int count = JsonArrayCount(entries);
+	decimal total = 0;
+	jsonArray skipped = JsonArrayCreate();
+	for (int i = 0; i < count; i++) {
+		string entry = StringTrim(JsonArrayGetAtIndex(entries, i));
+		try {
+			total = total + ReadAmount(entry);
+			PrintLine("Added   " + entry);
+		} catch {
+			// GetLastError says what went wrong. It is set only inside the catch.
+			PrintLine("Skipped " + entry + ": " + GetLastError());
+			skipped = JsonArrayAdd(skipped, entry);
+		}
+	}
+	// endregion
+
+	// region:end
+	// Some failures are worth stopping for: a claim with nothing readable in it is one.
+	if (JsonArrayCount(skipped) == count) {
+		throw("None of the " + count + " expenses could be read.");
+	}
+
+	AppStateSetOutputDecimal("total", total);
+	AppStateSetOutputJsonArray("skipped", skipped);
+	string summary = DecimalToString(total, "0.00") + " of " + DecimalToString(max, "0.00");
+	if (total > max) {
+		return("Over the limit: " + summary);
+	}
+	return("Within the limit: " + summary);
+	// endregion
+}

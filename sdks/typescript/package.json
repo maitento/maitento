@@ -1,0 +1,76 @@
+{
+  "name": "@maitento/sdk",
+  "version": "26.10.0",
+  "description": "The official TypeScript and JavaScript SDK for Maitento: deploy agents and interactions, run them, stream their output and react to their results.",
+  "license": "Apache-2.0",
+  "homepage": "https://docs.maitento.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maitento/maitento.git",
+    "directory": "sdks/typescript"
+  },
+  "bugs": {
+    "url": "https://github.com/maitento/maitento/issues"
+  },
+  "keywords": [
+    "maitento",
+    "ai",
+    "agents",
+    "llm",
+    "interactions",
+    "sdk",
+    "api-client"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/cjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "!dist/*/route-map.*",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "generate": "node scripts/generate-models.mjs",
+    "build": "node scripts/clean.mjs && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && node scripts/finish-build.mjs",
+    "route-map": "npm run build && node scripts/write-route-map.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:live": "vitest run --config vitest.live.config.ts"
+  },
+  "peerDependencies": {
+    "ws": ">=8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ws": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/ws": "8.18.2",
+    "typescript": "6.0.3",
+    "vitest": "5.0.3",
+    "ws": "8.22.0"
+  }
+}

@@ -1,0 +1,11 @@
+// A router never answers itself. On each turn it reads the specialists' summaries
+// and hands the turn to the one whose subject fits. The first one is the fallback.
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "Choose the specialist whose subject the question is about."
+summary = "Help desk for maths, cooking, travel and gardening questions"
+routedSubAgents = [
+  @ref("maths-tutor"),
+  @ref("cooking-coach"),
+  @ref("travel-guide"),
+  @ref("gardener")
+]

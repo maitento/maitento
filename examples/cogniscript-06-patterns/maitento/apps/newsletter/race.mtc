@@ -1,0 +1,50 @@
+// Starts the same interaction several times, and returns the first answer that comes back. The others are stopped.
+string FirstAnswer(string interaction, jsonObject inputs, int copies) {
+	jsonArray waiting = JsonArrayCreate();
+	for (int i = 0; i < copies; i++) {
+		guid runId = InteractionStart(interaction, inputs, "[]", "[]", "");
+		waiting = JsonArrayAdd(waiting, runId);
+	}
+
+	while (JsonArrayCount(waiting) > 0) {
+		// InteractionAwaitAny returns as soon as a run ends, with every run in the list that has ended so far.
+		jsonArray ended = InteractionAwaitAny(waiting);
+		for (int i = 0; i < JsonArrayCount(ended); i++) {
+			jsonObject run = JsonArrayGetAtIndex(ended, i);
+			waiting = Without(waiting, JsonObjectGet(run, "id"));
+			if (JsonObjectGet(run, "status") == "Finished") {
+				// The others are still running, and still costing: stop them.
+				StopAll(waiting);
+				return(JsonObjectGet(run, "output"));
+			}
+			PrintLine("A copy of " + interaction + " ended " + JsonObjectGet(run, "status") + ": " + JsonObjectGet(run, "failureDetails"));
+		}
+	}
+	throw("Every copy of " + interaction + " failed.");
+}
+
+// Stops every run in the list. Stopping a run that has already ended fails, and one may end just before it's stopped,
+// so each stop has its own try.
+void StopAll(jsonArray runIds) {
+	for (int i = 0; i < JsonArrayCount(runIds); i++) {
+		string runId = JsonArrayGetAtIndex(runIds, i);
+		try {
+			ProcessKill(runId, "Interaction");
+			PrintLine("Stopped the slower copy");
+		} catch {
+			PrintLine("The slower copy had already ended");
+		}
+	}
+}
+
+// The list without one value.
+jsonArray Without(jsonArray values, string value) {
+	jsonArray kept = JsonArrayCreate();
+	for (int i = 0; i < JsonArrayCount(values); i++) {
+		string item = JsonArrayGetAtIndex(values, i);
+		if (item != value) {
+			kept = JsonArrayAdd(kept, item);
+		}
+	}
+	return(kept);
+}

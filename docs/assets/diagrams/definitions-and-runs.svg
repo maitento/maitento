@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 284" width="640" height="284" role="img" aria-labelledby="title desc">
+  <title id="title">Definitions and runs</title>
+  <desc id="desc">On the left, definitions: files you write and deploy, such as an agent, an interaction, an app, a capsule or a code pipeline; each deploy that changes one makes a new version. An arrow labelled "start, by name" leads to the right, runs: what you start. A run has an id, such as 1f3c, moves from Running to Finished, and ends with an output such as "Hello! I'm well".</desc>
+  <!-- A self-contained dark panel in the Maitento Portal's dark palette (maitento/portal/src/styles/_tokens.scss), so it
+       reads the same on the site in either theme and on GitHub. System fonts only: an <img> cannot load web fonts. -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8193f8"/>
+    </marker>
+    <marker id="step" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6e7080"/>
+    </marker>
+  </defs>
+  <rect x="0.5" y="0.5" width="639" height="283" rx="16" fill="#141416" stroke="#2a2a30"/>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <!-- Definitions -->
+    <rect x="24" y="24" width="252" height="236" rx="12" fill="#1b1b1f" stroke="#2e2e35"/>
+    <text x="44" y="56" font-size="18" font-weight="600" fill="#f2f2f4">Definitions</text>
+    <text x="44" y="78" font-size="14" fill="#a6a7b0">files you write and deploy</text>
+
+    <g font-size="14" font-weight="500" fill="#dcdde3" text-anchor="middle">
+      <rect x="44" y="96" width="64" height="28" rx="14" fill="#232328" stroke="#3a3a42"/>
+      <text x="76" y="115">agent</text>
+      <rect x="116" y="96" width="100" height="28" rx="14" fill="#232328" stroke="#3a3a42"/>
+      <text x="166" y="115">interaction</text>
+      <rect x="44" y="132" width="52" height="28" rx="14" fill="#232328" stroke="#3a3a42"/>
+      <text x="70" y="151">app</text>
+      <rect x="104" y="132" width="80" height="28" rx="14" fill="#232328" stroke="#3a3a42"/>
+      <text x="144" y="151">capsule</text>
+      <rect x="44" y="168" width="122" height="28" rx="14" fill="#232328" stroke="#3a3a42"/>
+      <text x="105" y="187">code pipeline</text>
+    </g>
+
+    <text x="44" y="222" font-size="13" fill="#a6a7b0">each change you deploy is a version</text>
+    <g font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace" font-size="12" text-anchor="middle">
+      <rect x="44" y="232" width="32" height="18" rx="5" fill="none" stroke="#3a3a42"/>
+      <text x="60" y="245" fill="#a6a7b0">v1</text>
+      <rect x="82" y="232" width="32" height="18" rx="5" fill="none" stroke="#3a3a42"/>
+      <text x="98" y="245" fill="#a6a7b0">v2</text>
+      <rect x="120" y="232" width="32" height="18" rx="5" fill="rgba(129,147,248,0.16)" stroke="#8193f8"/>
+      <text x="136" y="245" fill="#c3cbfc">v3</text>
+    </g>
+
+    <!-- start -->
+    <path d="M284 146 H358" stroke="#8193f8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <text x="320" y="134" font-size="14" font-weight="600" fill="#a9b6fb" text-anchor="middle">start</text>
+    <text x="320" y="168" font-size="13" fill="#a6a7b0" text-anchor="middle">by name</text>
+
+    <!-- Runs -->
+    <rect x="364" y="24" width="252" height="236" rx="12" fill="#1b1b1f" stroke="#2e2e35"/>
+    <text x="384" y="56" font-size="18" font-weight="600" fill="#f2f2f4">Runs</text>
+    <text x="384" y="78" font-size="14" fill="#a6a7b0">what you start, each with an id</text>
+
+    <rect x="384" y="96" width="212" height="144" rx="10" fill="#222228" stroke="#33333a"/>
+    <text x="400" y="122" font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace" font-size="14" fill="#dcdde3">run 1f3c…</text>
+
+    <g font-size="13" font-weight="600" text-anchor="middle">
+      <rect x="400" y="136" width="74" height="26" rx="13" fill="rgba(106,168,245,0.14)" stroke="#6aa8f5"/>
+      <text x="437" y="154" fill="#93c0f8">Running</text>
+      <path d="M480 149 H498" stroke="#6e7080" stroke-width="1.5" fill="none" marker-end="url(#step)"/>
+      <rect x="504" y="136" width="76" height="26" rx="13" fill="rgba(60,207,134,0.14)" stroke="#3ccf86"/>
+      <text x="542" y="154" fill="#6fe0a7">Finished</text>
+    </g>
+
+    <text x="400" y="192" font-size="13" fill="#a6a7b0">output</text>
+    <text x="400" y="214" font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace" font-size="13" fill="#9fd89a">"Hello! I'm well…"</text>
+  </g>
+</svg>

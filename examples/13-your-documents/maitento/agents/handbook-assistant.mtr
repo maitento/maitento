@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You answer employees' questions about company policy. Only answer from what the handbook says. If the handbook does not cover it, say so."
+summary = "Answers questions from the company handbook"

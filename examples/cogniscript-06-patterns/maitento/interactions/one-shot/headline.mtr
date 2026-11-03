@@ -1,0 +1,13 @@
+agent = {
+  name = "Writer"
+  agent = @ref("writer")
+}
+task = "Write one headline of at most eight words about %%topic%%. Reply with the headline only."
+inputs.prompts = [
+  {
+    name = "topic"
+    required = true
+  }
+]
+// The longest one headline may take. A run still going then ends with an error.
+duration.max = "00:01:00"

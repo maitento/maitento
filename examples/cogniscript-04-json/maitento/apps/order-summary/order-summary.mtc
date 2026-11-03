@@ -1,0 +1,69 @@
+// The order-summary app: it reads an order sent as JSON, totals it, and publishes the result as typed named outputs.
+string main(string order) {
+	// region:read
+	// Every input arrives as text. StringToJsonObject checks that the text is a JSON object, so you can read it.
+	jsonObject parsed = StringToJsonObject(order);
+
+	// A plain value: JsonObjectGet gives its text.
+	string id = JsonObjectGet(parsed, "id");
+
+	// A nested object: read the object out, then read inside it.
+	jsonObject customer = JsonObjectGet(parsed, "customer");
+	string name = JsonObjectGet(customer, "name");
+	jsonObject address = JsonObjectGet(customer, "address");
+	string city = JsonObjectGet(address, "city");
+	PrintLine("Order " + id + " for " + name + " in " + city);
+	// endregion
+
+	// region:items
+	// An array of objects: count it, then read each object by its index, starting at 0.
+	jsonArray items = JsonObjectGet(parsed, "items");
+	int itemCount = JsonArrayCount(items);
+	decimal total = 0;
+	jsonArray lines = JsonArrayCreate();
+	for (int i = 0; i < itemCount; i++) {
+		jsonObject item = JsonArrayGetAtIndex(items, i);
+		string quantity = JsonObjectGet(item, "quantity");
+		decimal lineTotal = quantity * JsonObjectGet(item, "price");
+		total = total + lineTotal;
+		string line = quantity + " x " + JsonObjectGet(item, "name") + " = " + DecimalToString(lineTotal, "0.00");
+		PrintLine("- " + line);
+		lines = JsonArrayAdd(lines, line);
+	}
+	// endregion
+
+	// region:missing
+	// A key that isn't there reads as empty text, so check for "" before you rely on it.
+	string note = JsonObjectGet(parsed, "note");
+	if (note == "") {
+		note = "none";
+	}
+	PrintLine("Note: " + note);
+
+	// JSON's true reads as the text "true". Comparing with it gives false when the key is missing, too.
+	bool giftWrap = JsonObjectGet(parsed, "giftWrap") == "true";
+	if (giftWrap) {
+		PrintLine("Gift wrap: yes");
+	}
+	// endregion
+
+	// region:result
+	// Build a JSON object for the result. Each helper returns a new object, so assign it back.
+	jsonObject summary = JsonObjectCreate();
+	summary = JsonObjectSetString(summary, "order", id);
+	summary = JsonObjectSetString(summary, "customer", name);
+	summary = JsonObjectSetString(summary, "city", city);
+	summary = JsonObjectSetBool(summary, "giftWrap", giftWrap);
+	// The Set calls store only text, and true or false. To put a number or a list in an object, merge it in with
+	// JsonAtaTransform, which runs a JSONata expression over the object.
+	summary = JsonAtaTransform(summary, "$merge([$, {'total': " + total + ", 'lines': " + lines + "}])");
+
+	// Typed named outputs: one call for each type. Your code reads them back from the finished run.
+	AppStateSetOutputInteger("itemCount", itemCount);
+	AppStateSetOutputDecimal("total", total);
+	AppStateSetOutputBool("giftWrap", giftWrap);
+	AppStateSetOutputJsonArray("lines", lines);
+	AppStateSetOutputJsonObject("summary", summary);
+	return("Order " + id + ": " + itemCount + " items, " + DecimalToString(total, "0.00"));
+	// endregion
+}

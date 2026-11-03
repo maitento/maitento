@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = @prompt("poet")
+summary = "A poet who writes short poems"

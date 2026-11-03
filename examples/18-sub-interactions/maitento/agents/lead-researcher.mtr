@@ -1,0 +1,5 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You split big research jobs into small ones, run them in parallel, then combine the answers. If a piece of research fails, say which one failed and why. Never fill the gap from your own memory."
+summary = "Splits research into parallel sub-tasks"
+// Lets this agent start other interactions as sub-runs.
+allowSwarm = true

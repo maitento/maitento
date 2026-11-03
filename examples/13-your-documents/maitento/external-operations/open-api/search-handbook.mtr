@@ -1,0 +1,2 @@
+connector = @ref("knowledge-search")
+guidance = "Searches the company handbook. Use it before you answer any question about company policy, and quote what you find."

@@ -1,0 +1,32 @@
+// The newsletter team with a third member: a headline writer.
+task = "Produce a three-paragraph newsletter about %%topic%% for a general audience, with a headline on top."
+inputs.prompts = [
+  {
+    name = "topic"
+    required = true
+  }
+]
+manager = {
+  name = "Editor"
+  agent = @ref("editor")
+}
+agents = [
+  {
+    name = "Writer"
+    agent = @ref("writer")
+    mode = "Private"
+  },
+  {
+    name = "FactChecker"
+    agent = @ref("fact-checker")
+    mode = "OneTime"
+  },
+  {
+    // OneTime: it only needs the finished text, once.
+    name = "HeadlineWriter"
+    agent = @ref("headline-writer")
+    mode = "OneTime"
+  }
+]
+limits.maxDispatches = 8
+duration.max = "00:06:00"

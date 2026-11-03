@@ -1,0 +1,92 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "maitento"
+dynamic = ["version"]
+description = "The official Python SDK for Maitento, the AI OS: deploy agents and interactions, run them, and follow them live."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Maitento" }]
+keywords = ["maitento", "ai", "agents", "llm", "sdk", "interactions"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Framework :: AsyncIO",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+# Lower bounds are releases that have been widely available for a long time (httpx 0.27: Feb 2024,
+# pydantic 2.9: Sep 2024, websockets 13.0: Aug 2024 — the first with the `websockets.asyncio` client).
+dependencies = [
+    "httpx>=0.27,<1",
+    "pydantic>=2.9,<3",
+    "websockets>=13.0",
+]
+
+[project.optional-dependencies]
+# Pinned so a contributor's run matches CI. Every pin was released at least two weeks before 2026-10-26.
+dev = [
+    "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
+    "respx==0.23.1",
+    "mypy==2.4.0",
+]
+
+[project.urls]
+Homepage = "https://docs.maitento.com"
+Documentation = "https://docs.maitento.com"
+Repository = "https://github.com/maitento/maitento"
+Changelog = "https://github.com/maitento/maitento/blob/main/sdks/python/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "src/maitento/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/maitento"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/maitento",
+    "tests",
+    "scripts",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "NOTICE",
+    "route-map.json",
+    "pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-m 'not live' -p no:cacheprovider"
+markers = [
+    "live: calls a running Maitento API (needs MAITENTO_BASE_URL, MAITENTO_API_KEY and MAITENTO_TEST_DEEPSEEK_KEY); run with `pytest -m live`",
+]
+filterwarnings = ["error"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src/maitento"]
+plugins = ["pydantic.mypy"]
+cache_dir = "/tmp/.mypy_cache"
+
+[[tool.mypy.overrides]]
+# Generated from the server's wire contract; regenerated, never hand-edited.
+module = ["maitento._generated.*"]
+ignore_errors = true

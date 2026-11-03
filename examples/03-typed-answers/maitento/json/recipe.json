@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "title": { "type": "string" },
+    "servings": { "type": ["integer", "null"] },
+    "ingredients": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item": { "type": "string" },
+          "quantity": { "type": ["string", "null"] }
+        },
+        "required": ["item", "quantity"],
+        "additionalProperties": false
+      }
+    },
+    "steps": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["title", "servings", "ingredients", "steps"],
+  "additionalProperties": false
+}

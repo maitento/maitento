@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "done": {
+      "type": "boolean",
+      "description": "True when you can answer the question"
+    },
+    "command": {
+      "type": "string",
+      "description": "The next bash command to run, or an empty string when done"
+    },
+    "answer": {
+      "type": "string",
+      "description": "The answer, when done; otherwise an empty string"
+    }
+  },
+  "required": ["done", "command", "answer"],
+  "additionalProperties": false
+}

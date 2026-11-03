@@ -1,0 +1,13 @@
+{
+  "id": "A-1001",
+  "customer": {
+    "name": "Ada Lovelace",
+    "address": { "city": "London", "country": "UK" }
+  },
+  "items": [
+    { "name": "Bamboo cup", "quantity": 2, "price": 12.5 },
+    { "name": "Spare lid", "quantity": 1, "price": 3 },
+    { "name": "Cleaning brush", "quantity": 3, "price": 1.99 }
+  ],
+  "giftWrap": true
+}

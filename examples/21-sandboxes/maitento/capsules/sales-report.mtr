@@ -1,0 +1,21 @@
+// A capsule is a short-lived Linux sandbox. This one mounts the sales-data file system,
+// runs a Python script on the CSV in it, and stops when the script finishes.
+autoTerminate = true
+maxDuration = "00:05:00"
+
+// The file system must exist before you deploy: create it and upload the data first.
+vfs = [
+  {
+    vfs = @ref("sales-data")
+    mountName = "data"
+  }
+]
+
+startup = [
+  {
+    command = "python3"
+    arguments = ["/mnt/data/summarise.py"]
+    wait = true
+    maxDuration = "00:02:00"
+  }
+]

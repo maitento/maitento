@@ -1,0 +1,12 @@
+// Replace the host with your orders API's public URL: the tunnel address from tutorial 9.
+method = "POST"
+url = "https://YOUR-SERVER.example.com/orders/{orderId}/refund"
+description = "Refunds part or all of an order"
+auth = "Header"
+schema.request = @json("refund-request")
+parameters.path = [
+  {
+    name = "orderId"
+    description = "The order id, for example A-1001"
+  }
+]

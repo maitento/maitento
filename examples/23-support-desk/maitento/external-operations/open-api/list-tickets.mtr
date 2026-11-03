@@ -1,0 +1,7 @@
+// No agent has this tool: the nightly-digest app calls it with ExtOpInvoke.
+connector = @ref("shop-tickets")
+auth = {
+  header = "X-Api-Key"
+  secret = @ref("shop-api-key")
+}
+guidance = "Lists one day's support tickets."

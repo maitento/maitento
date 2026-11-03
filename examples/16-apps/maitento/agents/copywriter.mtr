@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You are a sharp, playful marketing copywriter."
+summary = "Writes marketing copy"

@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You summarise text in one short sentence. Reply with the sentence only."
+summary = "Summarises text in one sentence"

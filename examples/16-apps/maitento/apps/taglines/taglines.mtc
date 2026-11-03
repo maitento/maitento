@@ -1,0 +1,51 @@
+// The taglines app: it asks for three campaign angles, then writes a tagline for each angle, all at once.
+// An app starts at main. main's parameters are the app's inputs: this one has one, product.
+string main(string product) {
+	// Stop early, with a clear message, when the input is missing.
+	if (product == "") {
+		throw("Tell me which product to write taglines for.");
+	}
+	PrintLine("Brainstorming angles for " + product);
+
+	// Start the brainstorm interaction and wait for it. The last three arguments are for memory,
+	// model overrides and a response schema; this app uses none of them.
+	jsonObject brainstormInputs = JsonObjectCreate();
+	brainstormInputs = JsonObjectSetString(brainstormInputs, "product", product);
+	guid brainstormId = InteractionStart("brainstorm", brainstormInputs, "[]", "[]", "");
+	jsonObject brainstorm = InteractionAwait(brainstormId);
+	if (JsonObjectGet(brainstorm, "status") != "Finished") {
+		throw("The brainstorm failed: " + JsonObjectGet(brainstorm, "failureDetails"));
+	}
+
+	// The brainstorm's answer is JSON that matches json/ideas.json.
+	jsonObject result = StringToJsonObject(JsonObjectGet(brainstorm, "output"));
+	jsonArray ideas = JsonObjectGet(result, "ideas");
+
+	// Start one tagline run per idea. They all run at the same time.
+	jsonArray runIds = JsonArrayCreate();
+	int ideaCount = JsonArrayCount(ideas);
+	for (int i = 0; i < ideaCount; i++) {
+		jsonObject inputs = JsonObjectCreate();
+		inputs = JsonObjectSetString(inputs, "product", product);
+		inputs = JsonObjectSetString(inputs, "idea", JsonArrayGetAtIndex(ideas, i));
+		guid runId = InteractionStart("tagline", inputs, "[]", "[]", "");
+		runIds = JsonArrayAdd(runIds, runId);
+	}
+
+	// Wait for every tagline run, then collect the answers.
+	jsonArray runs = InteractionAwaitAll(runIds);
+	jsonArray taglines = JsonArrayCreate();
+	int runCount = JsonArrayCount(runs);
+	for (int j = 0; j < runCount; j++) {
+		jsonObject run = JsonArrayGetAtIndex(runs, j);
+		if (JsonObjectGet(run, "status") == "Finished") {
+			string tagline = JsonObjectGet(run, "output");
+			PrintLine("- " + tagline);
+			taglines = JsonArrayAdd(taglines, tagline);
+		}
+	}
+
+	// A named output is what your code reads back from the finished run. return gives the run's return value.
+	AppStateSetOutputJsonArray("taglines", taglines);
+	return(JsonArrayCount(taglines) + " taglines");
+}

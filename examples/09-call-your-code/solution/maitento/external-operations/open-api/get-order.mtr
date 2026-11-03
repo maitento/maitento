@@ -1,0 +1,7 @@
+connector = @ref("orders-get")
+// Maitento sends the secret's value in this header. Your server checks it.
+auth = {
+  header = "X-Api-Key"
+  secret = @ref("orders-api-key")
+}
+guidance = "Looks up an order: its items, total, status and how much has already been refunded."

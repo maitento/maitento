@@ -1,0 +1,3 @@
+maitento>=26.10.0
+fastapi==0.143.0
+uvicorn==0.54.0

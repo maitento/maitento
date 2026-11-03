@@ -1,0 +1,55 @@
+// The challenge: the taglines app, plus one more step at the end that picks the best tagline.
+string main(string product) {
+	if (product == "") {
+		throw("Tell me which product to write taglines for.");
+	}
+	PrintLine("Brainstorming angles for " + product);
+
+	jsonObject brainstormInputs = JsonObjectCreate();
+	brainstormInputs = JsonObjectSetString(brainstormInputs, "product", product);
+	guid brainstormId = InteractionStart("brainstorm", brainstormInputs, "[]", "[]", "");
+	jsonObject brainstorm = InteractionAwait(brainstormId);
+	if (JsonObjectGet(brainstorm, "status") != "Finished") {
+		throw("The brainstorm failed: " + JsonObjectGet(brainstorm, "failureDetails"));
+	}
+	jsonObject result = StringToJsonObject(JsonObjectGet(brainstorm, "output"));
+	jsonArray ideas = JsonObjectGet(result, "ideas");
+
+	jsonArray runIds = JsonArrayCreate();
+	int ideaCount = JsonArrayCount(ideas);
+	for (int i = 0; i < ideaCount; i++) {
+		jsonObject inputs = JsonObjectCreate();
+		inputs = JsonObjectSetString(inputs, "product", product);
+		inputs = JsonObjectSetString(inputs, "idea", JsonArrayGetAtIndex(ideas, i));
+		guid runId = InteractionStart("tagline", inputs, "[]", "[]", "");
+		runIds = JsonArrayAdd(runIds, runId);
+	}
+
+	jsonArray runs = InteractionAwaitAll(runIds);
+	jsonArray taglines = JsonArrayCreate();
+	int runCount = JsonArrayCount(runs);
+	for (int j = 0; j < runCount; j++) {
+		jsonObject run = JsonArrayGetAtIndex(runs, j);
+		if (JsonObjectGet(run, "status") == "Finished") {
+			string tagline = JsonObjectGet(run, "output");
+			PrintLine("- " + tagline);
+			taglines = JsonArrayAdd(taglines, tagline);
+		}
+	}
+
+	// The new step: hand every tagline to the pick-best interaction, and wait for its choice.
+	jsonObject pickInputs = JsonObjectCreate();
+	pickInputs = JsonObjectSetString(pickInputs, "product", product);
+	pickInputs = JsonObjectSetString(pickInputs, "taglines", taglines);
+	guid pickId = InteractionStart("pick-best", pickInputs, "[]", "[]", "");
+	jsonObject pick = InteractionAwait(pickId);
+	if (JsonObjectGet(pick, "status") != "Finished") {
+		throw("Picking the best tagline failed: " + JsonObjectGet(pick, "failureDetails"));
+	}
+	string best = JsonObjectGet(pick, "output");
+	PrintLine("Best: " + best);
+
+	AppStateSetOutputJsonArray("taglines", taglines);
+	AppStateSetOutputString("best", best);
+	return(best);
+}

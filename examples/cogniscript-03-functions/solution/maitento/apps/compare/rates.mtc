@@ -1,0 +1,44 @@
+// The shipping app's rates. return hands a value back and leaves the function at once, so no else is needed
+// after a branch that returns.
+
+// How many times the UK price a destination costs.
+decimal DestinationRate(string destination) {
+	if (destination == "UK") {
+		return(1);
+	}
+	if (destination == "EU" || destination == "Europe") {
+		return(1.5);
+	}
+	return(3);
+}
+
+// The size of box that a parcel of kg kilograms needs.
+string BoxSize(decimal kg) {
+	if (kg <= 2) {
+		return("small");
+	}
+	if (kg <= 10) {
+		return("medium");
+	}
+	return("large");
+}
+
+// What a box of that size costs to send in the UK.
+decimal SizePrice(string size) {
+	if (size == "small") {
+		return(3.5);
+	}
+	if (size == "medium") {
+		return(6);
+	}
+	return(11);
+}
+
+// The total after the discount: UK orders of 40 or more get 10% off.
+decimal WithDiscount(decimal total, string destination) {
+	if (destination == "UK" && total >= 40) {
+		PrintLine("10% off UK orders of 40 or more");
+		return(total * 0.9);
+	}
+	return(total);
+}

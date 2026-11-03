@@ -1,0 +1,29 @@
+// The receipt app: it works out what an order costs, then prints a receipt for it.
+// main's parameters are the app's inputs. Each one arrives as text; its type says what the text should hold.
+string main(string item, decimal price, int quantity) {
+	// region:sums
+	// Arithmetic is decimal, so money comes out exact: 4.5 * 3 is 13.5, never 13.499999.
+	decimal subtotal = price * quantity;
+	// Tax is 20%, rounded to two decimal places.
+	decimal tax = MathRound(subtotal * 0.2, 2);
+	decimal total = subtotal + tax;
+	// endregion
+
+	// region:receipt
+	// A string call returns a new value: item itself is unchanged.
+	string name = StringToUpper(item);
+
+	// + joins text. DecimalToString writes a number the way you ask: "0.00" is always two decimal places.
+	// StringPadLeft adds spaces on the left, so the amounts line up on the right.
+	PrintLine("RECEIPT");
+	PrintLine(quantity + " x " + name + " at " + DecimalToString(price, "0.00"));
+	PrintLine("Subtotal  " + StringPadLeft(DecimalToString(subtotal, "0.00"), 8, " "));
+	PrintLine("Tax 20%   " + StringPadLeft(DecimalToString(tax, "0.00"), 8, " "));
+	PrintLine("Total     " + StringPadLeft(DecimalToString(total, "0.00"), 8, " "));
+	// endregion
+
+	// region:return
+	// return ends the run. What it returns is the run's return value.
+	return(DecimalToString(total, "0.00"));
+	// endregion
+}

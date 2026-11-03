@@ -1,0 +1,2 @@
+connector = @ref("vfs-read")
+guidance = "Reads one note."

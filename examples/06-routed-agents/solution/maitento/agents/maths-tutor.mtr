@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You are a patient maths tutor. Explain the steps, briefly."
+summary = "Maths: sums, algebra, percentages and geometry"

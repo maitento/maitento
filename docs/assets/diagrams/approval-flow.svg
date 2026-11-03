@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 392" width="680" height="392" role="img" aria-labelledby="title desc">
+  <title id="title">How an approval works</title>
+  <desc id="desc">1. The agent calls a tool that needs approval, such as refund-order with an amount of 12.50. 2. Maitento checks the arguments against the tool's request schema. 3. The call is held: the run's status is PendingApproval and nothing reaches your server. If a person approves, Maitento calls your server and the agent gets its answer. If a person rejects it with a reason, the agent gets the reason as the tool's result and redrafts the call, which is held again for a new approval.</desc>
+  <!-- A self-contained dark panel in the Maitento Portal's dark palette, like the other diagrams in this folder, so it
+       reads the same on the site in either theme and on GitHub. System fonts only: an <img> cannot load web fonts.
+       Behaviour: maitento/app/ApiServices/InteractionProcessService.cs (ApproveToolCall, RejectToolCall). -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8193f8"/>
+    </marker>
+  </defs>
+  <rect x="0.5" y="0.5" width="679" height="391" rx="16" fill="#141416" stroke="#2a2a30"/>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <!-- 1. The agent asks -->
+    <rect x="24" y="32" width="196" height="104" rx="12" fill="#1b1b1f" stroke="#2e2e35"/>
+    <text x="40" y="60" font-size="15" font-weight="600" fill="#f2f2f4">1. The agent asks</text>
+    <text x="40" y="84" font-size="12.5" fill="#a6a7b0">it calls a tool that</text>
+    <text x="40" y="102" font-size="12.5" fill="#a6a7b0">needs approval:</text>
+    <text x="40" y="122" font-size="12" fill="#dcdde3" font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace">refund-order 12.50</text>
+
+    <!-- 2. Maitento checks -->
+    <rect x="242" y="32" width="196" height="104" rx="12" fill="#1b1b1f" stroke="#2e2e35"/>
+    <text x="258" y="60" font-size="15" font-weight="600" fill="#f2f2f4">2. Maitento checks</text>
+    <text x="258" y="84" font-size="12.5" fill="#a6a7b0">the arguments against</text>
+    <text x="258" y="102" font-size="12.5" fill="#a6a7b0">the request schema</text>
+
+    <!-- 3. The call is held -->
+    <rect x="460" y="32" width="196" height="104" rx="12" fill="rgba(245,181,68,0.08)" stroke="#f5b544"/>
+    <text x="476" y="60" font-size="15" font-weight="600" fill="#f8ca76">3. The call is held</text>
+    <text x="476" y="84" font-size="12.5" fill="#a6a7b0">the run waits in</text>
+    <text x="476" y="102" font-size="12" fill="#f8ca76" font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace">PendingApproval</text>
+    <text x="476" y="122" font-size="12.5" fill="#a6a7b0">nothing reaches your server</text>
+
+    <path d="M222 84 H236" stroke="#8193f8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M440 84 H454" stroke="#8193f8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+    <!-- Approved -->
+    <rect x="460" y="212" width="196" height="112" rx="12" fill="rgba(60,207,134,0.08)" stroke="#3ccf86"/>
+    <text x="476" y="240" font-size="15" font-weight="600" fill="#6fe0a7">Approved</text>
+    <text x="476" y="264" font-size="12.5" fill="#a6a7b0">Maitento calls your server</text>
+    <text x="476" y="284" font-size="12" fill="#dcdde3" font-family="ui-monospace, SFMono-Regular, 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo, monospace">POST …/refund</text>
+    <text x="476" y="306" font-size="12.5" fill="#a6a7b0">and the agent gets the answer</text>
+
+    <!-- Rejected -->
+    <rect x="242" y="212" width="196" height="112" rx="12" fill="rgba(242,122,118,0.08)" stroke="#f27a76"/>
+    <text x="258" y="240" font-size="15" font-weight="600" fill="#f59b98">Rejected, with a reason</text>
+    <text x="258" y="264" font-size="12.5" fill="#a6a7b0">the agent gets the reason</text>
+    <text x="258" y="284" font-size="12.5" fill="#a6a7b0">as the tool's result;</text>
+    <text x="258" y="306" font-size="12.5" fill="#a6a7b0">your server is never called</text>
+
+    <!-- Held -> Approved, Held -> Rejected, Rejected -> the agent again -->
+    <path d="M598 138 V206" stroke="#8193f8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <text x="608" y="178" font-size="13" font-weight="600" fill="#a9b6fb">approve</text>
+    <path d="M520 138 L408 206" stroke="#8193f8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <text x="452" y="166" font-size="13" font-weight="600" fill="#a9b6fb" text-anchor="end">reject</text>
+    <path d="M240 268 H122 V142" stroke="#8193f8" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <text x="132" y="190" font-size="13" font-weight="600" fill="#a9b6fb">redrafts:</text>
+    <text x="132" y="208" font-size="12.5" fill="#a6a7b0">a new call,</text>
+    <text x="132" y="226" font-size="12.5" fill="#a6a7b0">held again</text>
+
+    <text x="24" y="362" font-size="12.5" fill="#6e7080">A tool with requiresApproval = true. The run waits for as long as it takes: nothing is called until a person decides.</text>
+  </g>
+</svg>

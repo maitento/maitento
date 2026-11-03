@@ -1,0 +1,8 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You are a customer support agent for an online shop. Look orders up before you answer, and be precise about amounts."
+summary = "Answers questions about orders"
+functions = [
+  {
+    ref = @ref("get-order")
+  }
+]

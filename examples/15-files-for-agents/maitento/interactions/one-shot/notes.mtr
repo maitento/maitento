@@ -1,0 +1,53 @@
+agent = {
+  name = "NoteKeeper"
+  agent = @ref("note-keeper")
+}
+task = "%%request%%"
+inputs.prompts = [
+  {
+    name = "request"
+    description = "What to do with the notes"
+    required = true
+  }
+]
+functions.openApi = [
+  {
+    name = "list-notes"
+    ref = @ref("list-notes")
+  },
+  {
+    name = "read-note"
+    ref = @ref("read-note")
+  },
+  {
+    name = "write-note"
+    ref = @ref("write-note")
+  }
+]
+// One run input, notesVfsId, fills the {id} of all three tools.
+inputs.functions.binding = [
+  {
+    function = @ref("list-notes")
+    name = "notesVfsId"
+    target = "id"
+    description = "The virtual file system that holds the notes"
+    required = true
+    type = "path"
+  },
+  {
+    function = @ref("read-note")
+    name = "notesVfsId"
+    target = "id"
+    description = "The virtual file system that holds the notes"
+    required = true
+    type = "path"
+  },
+  {
+    function = @ref("write-note")
+    name = "notesVfsId"
+    target = "id"
+    description = "The virtual file system that holds the notes"
+    required = true
+    type = "path"
+  }
+]

@@ -1,0 +1,12 @@
+agent = {
+  name = "Support"
+  agent = @ref("support-agent")
+}
+task = "A customer writes: %%message%%"
+inputs.prompts = [
+  {
+    name = "message"
+    description = "What the customer wrote"
+    required = true
+  }
+]

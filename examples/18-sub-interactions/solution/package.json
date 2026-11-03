@@ -1,0 +1,9 @@
+{
+  "name": "maitento-example-18-sub-interactions-solution",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "dependencies": {
+    "@maitento/sdk": "^26.10.0"
+  }
+}

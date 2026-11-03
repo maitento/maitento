@@ -1,0 +1,6 @@
+// A one-shot interaction: one agent, one task, one answer.
+agent = {
+  name = "Greeter"
+  agent = @ref("greeter")
+}
+task = "Hello, how are you?"

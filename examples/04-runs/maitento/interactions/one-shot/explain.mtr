@@ -1,0 +1,13 @@
+agent = {
+  name = "Explainer"
+  agent = @ref("explainer")
+}
+// Long enough to take a few seconds, so there is time to look at the run while it works.
+task = "Explain %%topic%% in about 400 words."
+inputs.prompts = [
+  {
+    name = "topic"
+    description = "What to explain"
+    required = true
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "name": "maitento-example-10-approvals",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "support": "node support.ts"
+  },
+  "dependencies": {
+    "@maitento/sdk": "^26.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.0"
+  }
+}

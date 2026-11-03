@@ -1,0 +1,15 @@
+agent = {
+  name = "Copywriter"
+  agent = @ref("copywriter")
+}
+task = "Write one tagline of at most ten words for %%product%%, using this angle: %%idea%%. Reply with the tagline only."
+inputs.prompts = [
+  {
+    name = "product"
+    required = true
+  },
+  {
+    name = "idea"
+    required = true
+  }
+]

@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You explain things clearly and simply, to a curious twelve-year-old."
+summary = "Explains a topic in plain words"

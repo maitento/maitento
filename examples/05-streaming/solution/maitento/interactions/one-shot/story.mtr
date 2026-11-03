@@ -1,0 +1,12 @@
+agent = {
+  name = "Storyteller"
+  agent = @ref("storyteller")
+}
+task = "Tell a bedtime story of about 200 words about %%subject%%."
+inputs.prompts = [
+  {
+    name = "subject"
+    description = "Who or what the story is about"
+    required = true
+  }
+]

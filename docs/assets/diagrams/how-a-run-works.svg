@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 236" width="520" height="236" role="img" aria-labelledby="title desc">
+  <title id="title">How a run works</title>
+  <desc id="desc">Your code starts a run through the Maitento API. Maitento runs your agent, which talks to the model with your model key, and the finished run comes back to your code.</desc>
+  <!-- Mid-tone colours on a transparent background, so the diagram reads on GitHub and on the site, light or dark.
+       Two rows rather than one, so the labels stay legible when a phone scales it down. -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#7d84f0"/>
+    </marker>
+  </defs>
+  <g font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" text-anchor="middle">
+    <rect x="8" y="24" width="196" height="72" rx="14" fill="none" stroke="#8a8fa3" stroke-width="1.5"/>
+    <text x="106" y="56" font-size="18" font-weight="600" fill="#7d8195">Your code</text>
+    <text x="106" y="80" font-size="13" fill="#8a8fa3">TS · Python · C# · CLI</text>
+
+    <rect x="316" y="24" width="196" height="72" rx="14" fill="none" stroke="#636df1" stroke-width="2"/>
+    <text x="414" y="56" font-size="18" font-weight="600" fill="#636df1">Maitento</text>
+    <text x="414" y="80" font-size="13" fill="#8a8fa3">runs it for you</text>
+
+    <rect x="316" y="156" width="196" height="72" rx="14" fill="none" stroke="#8a8fa3" stroke-width="1.5"/>
+    <text x="414" y="188" font-size="18" font-weight="600" fill="#7d8195">Your agent</text>
+    <text x="414" y="212" font-size="13" fill="#8a8fa3">prompt · tools · memory</text>
+
+    <rect x="8" y="156" width="196" height="72" rx="14" fill="none" stroke="#8a8fa3" stroke-width="1.5"/>
+    <text x="106" y="188" font-size="18" font-weight="600" fill="#7d8195">Model</text>
+    <text x="106" y="212" font-size="13" fill="#8a8fa3">with your model key</text>
+
+    <path d="M208 48 H310" stroke="#7d84f0" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M312 74 H210" stroke="#7d84f0" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M414 100 V150" stroke="#7d84f0" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M312 192 H210" stroke="#7d84f0" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <text x="260" y="38" font-size="13" fill="#8a8fa3">start</text>
+    <text x="260" y="96" font-size="13" fill="#8a8fa3">finished run</text>
+  </g>
+</svg>

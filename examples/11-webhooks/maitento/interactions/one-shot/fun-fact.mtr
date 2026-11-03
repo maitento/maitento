@@ -1,0 +1,13 @@
+// Something quick to run, so your receiver has a run to hear about.
+agent = {
+  name = "FactTeller"
+  agent = @ref("fact-teller")
+}
+task = "Tell me one surprising fact about %%topic%%."
+inputs.prompts = [
+  {
+    name = "topic"
+    description = "What the fact is about"
+    required = true
+  }
+]

@@ -1,0 +1,18 @@
+// A round-robin interaction where a person sits at the table and speaks first.
+agents = [
+  {
+    name = "Assistant"
+    agent = @ref("assistant")
+  }
+]
+task = "Chat with the person. Answer what they ask."
+features = {
+  voting = false
+  noAction = false
+  directQuestions = false
+  solutionProposal = false
+}
+human = {
+  first = true
+  solutions = false
+}

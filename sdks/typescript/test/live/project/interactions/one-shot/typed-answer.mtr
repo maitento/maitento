@@ -1,0 +1,13 @@
+// A structured answer: the output is JSON matching json/typed-answer.json.
+agent = {
+  name = "Answerer"
+  agent = @ref("greeter")
+}
+task = "%%question%% Answer with the answer itself and how sure you are, from 0 to 1."
+inputs.prompts = [
+  {
+    name = "question"
+    required = true
+  }
+]
+schema.solution = @json("typed-answer")

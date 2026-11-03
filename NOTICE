@@ -1,0 +1,7 @@
+Maitento SDKs, examples and documentation
+Copyright 2026 Brunelly Ltd
+
+This repository is licensed under the Apache License, Version 2.0 (see LICENSE). The licence covers the SDKs, the
+examples and the documentation in it. It does not cover the Maitento service, which is used under its own terms.
+
+Each SDK lists its own third-party dependencies in its package manifest. None of them is bundled into this repository.

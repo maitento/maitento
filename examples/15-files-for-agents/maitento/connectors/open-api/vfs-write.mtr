@@ -1,0 +1,17 @@
+method = "PUT"
+url = "https://api.maitento.com/vfs/by-id/{id}/files/write/text"
+description = "Writes a text file to a virtual file system, replacing it if it exists"
+auth = "Maitento"
+schema.request = @json("vfs-write-request")
+parameters.path = [
+  {
+    name = "id"
+    description = "The virtual file system id"
+  }
+]
+parameters.query = [
+  {
+    name = "path"
+    description = "The file to write, for example /shopping.md"
+  }
+]

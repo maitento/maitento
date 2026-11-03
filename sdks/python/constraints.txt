@@ -1,0 +1,4 @@
+# The runtime dependency versions CI tests against (each released at least two weeks before 2026-10-26).
+httpx==0.28.1
+pydantic==2.14.1
+websockets==17.2

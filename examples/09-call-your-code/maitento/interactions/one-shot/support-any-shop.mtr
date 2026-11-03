@@ -1,0 +1,25 @@
+// The support desk for any shop: each run says which shop's key the get-order tool sends.
+agent = {
+  name = "Support"
+  agent = @ref("support-agent")
+}
+task = "A customer writes: %%message%%"
+inputs.prompts = [
+  {
+    name = "message"
+    description = "What the customer wrote"
+    required = true
+  }
+]
+// The run passes the id of a secret, and Maitento sends that secret's value in X-Api-Key instead of the one the tool
+// names. The agent never sees it.
+inputs.functions.auth = [
+  {
+    name = "shopKey"
+    description = "The id of the secret that holds the shop's API key"
+    function = @ref("get-order")
+    agent = @ref("support-agent")
+    header = "X-Api-Key"
+    required = true
+  }
+]

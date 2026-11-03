@@ -1,0 +1,19 @@
+// One step: given the question and what has been run so far, the analyst picks the next command,
+// or answers. The app calls this once per step.
+agent = {
+  name = "Analyst"
+  agent = @ref("analyst")
+}
+task = @prompt("next-command")
+inputs.prompts = [
+  {
+    name = "question"
+    required = true
+  },
+  {
+    name = "transcript"
+    description = "The commands run so far, each with its exit code and output"
+    required = false
+  }
+]
+schema.solution = @json("next-command")

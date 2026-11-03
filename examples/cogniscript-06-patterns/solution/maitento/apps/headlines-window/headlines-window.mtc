@@ -1,0 +1,58 @@
+// The challenge: the headlines app with a sliding window instead of batches. Two runs go at once, and the next topic
+// starts as soon as any run ends, not when the whole batch has.
+string main(string topics) {
+	jsonArray list = StringSplit(topics, ",", true);
+	int count = JsonArrayCount(list);
+	if (StringTrim(topics) == "") {
+		throw("Send at least one topic. Separate topics with commas.");
+	}
+
+	int window = 2;
+	int next = 0;
+	jsonArray running = JsonArrayCreate();
+	jsonObject topicOf = JsonObjectCreate();
+	jsonArray headlines = JsonArrayCreate();
+	while (next < count || JsonArrayCount(running) > 0) {
+		// Fill the window: start topics until two are running, or none are left.
+		while (next < count && JsonArrayCount(running) < window) {
+			string topic = StringTrim(JsonArrayGetAtIndex(list, next));
+			jsonObject inputs = JsonObjectCreate();
+			inputs = JsonObjectSetString(inputs, "topic", topic);
+			guid runId = InteractionStart("headline", inputs, "[]", "[]", "");
+			running = JsonArrayAdd(running, runId);
+			topicOf = JsonObjectSetString(topicOf, runId, topic);
+			PrintLine("Started " + topic);
+			next++;
+		}
+
+		// Wait for any run to end. Every run that has ended frees its place in the window.
+		jsonArray ended = InteractionAwaitAny(running);
+		for (int i = 0; i < JsonArrayCount(ended); i++) {
+			jsonObject run = JsonArrayGetAtIndex(ended, i);
+			string runId = JsonObjectGet(run, "id");
+			running = Without(running, runId);
+			string topic = JsonObjectGet(topicOf, runId);
+			if (JsonObjectGet(run, "status") == "Finished") {
+				PrintLine("- " + topic + ": " + JsonObjectGet(run, "output"));
+				headlines = JsonArrayAdd(headlines, JsonObjectGet(run, "output"));
+			} else {
+				PrintLine("No headline for " + topic + ": " + JsonObjectGet(run, "failureDetails"));
+			}
+		}
+	}
+
+	AppStateSetOutputJsonArray("headlines", headlines);
+	return(JsonArrayCount(headlines) + " headlines");
+}
+
+// The list without one value.
+jsonArray Without(jsonArray values, string value) {
+	jsonArray kept = JsonArrayCreate();
+	for (int i = 0; i < JsonArrayCount(values); i++) {
+		string item = JsonArrayGetAtIndex(values, i);
+		if (item != value) {
+			kept = JsonArrayAdd(kept, item);
+		}
+	}
+	return(kept);
+}

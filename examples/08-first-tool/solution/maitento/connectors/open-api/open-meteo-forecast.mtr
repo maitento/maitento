@@ -1,0 +1,24 @@
+// The connector: the HTTP call itself. Open-Meteo's forecast API is free and needs no key.
+method = "GET"
+url = "https://api.open-meteo.com/v1/forecast"
+description = "Current weather for a latitude and longitude, from Open-Meteo"
+parameters.query = [
+  {
+    name = "latitude"
+    description = "Latitude in decimal degrees, for example 51.5072"
+    type = "number"
+  },
+  {
+    name = "longitude"
+    description = "Longitude in decimal degrees, for example -0.1276"
+    type = "number"
+  },
+  {
+    name = "current"
+    description = "Comma-separated list of current weather variables"
+  },
+  {
+    name = "temperature_unit"
+    description = "celsius or fahrenheit"
+  }
+]

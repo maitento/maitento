@@ -1,0 +1,7 @@
+connector = @ref("shop-order-get")
+// Maitento sends the secret's value in this header, and your app checks it (tutorial 9).
+auth = {
+  header = "X-Api-Key"
+  secret = @ref("shop-api-key")
+}
+guidance = "Looks up an order: who placed it, each item and its price, the status and how much has been refunded."

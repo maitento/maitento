@@ -1,0 +1,47 @@
+// A one-to-one conversation with Wren, a companion who remembers.
+//
+// Each person gets their own loom (scope = "Input" on userName), so Wren wakes up knowing whoever
+// it is talking to, and never mixes one person's threads into another's conversation.
+
+agents = [
+  {
+    name = "Wren"
+    agent = @ref("wren")
+  }
+]
+
+task = @prompt("wren-chat")
+
+inputs.prompts = [
+  {
+    name = "userName"
+    required = true
+  }
+]
+
+features = {
+  voting = false
+  noAction = false
+  directQuestions = false
+  solutionProposal = false
+}
+
+human = {
+  first = true
+  solutions = false
+}
+
+loom = {
+  enabled = true
+  // One loom per value of the userName input: one memory per person.
+  scope = "Input"
+  scopeInput = "userName"
+  // Memories are about the person named by userName.
+  subjectInputs = [ "userName" ]
+  // A weaver reads every exchange and keeps what is worth keeping. Wren can also weave and recall itself.
+  weave = "Auto"
+  recall = "Suggest"
+  // Five quiet minutes after a conversation, night weaving tidies the memory up.
+  nightWeaving = true
+  quietMinutes = 5
+}

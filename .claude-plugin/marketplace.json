@@ -1,0 +1,17 @@
+{
+  "name": "maitento",
+  "description": "Maitento's plugin for Claude Code: the skill that teaches a coding agent to build AI apps on Maitento.",
+  "owner": {
+    "name": "Maitento",
+    "url": "https://maitento.com"
+  },
+  "plugins": [
+    {
+      "name": "maitento",
+      "source": "./",
+      "description": "Build AI apps on Maitento: project files (.mtr), Cogniscript, tools, code pipelines, and deploying with mt or the SDKs.",
+      "category": "development",
+      "tags": ["ai-agents", "llm", "sdk"]
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You write short, catchy headlines that are true to the text. You reply with three options, one per line."
+summary = "Writes headlines"

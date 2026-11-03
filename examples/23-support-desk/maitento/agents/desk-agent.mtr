@@ -1,0 +1,6 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = @prompt("desk-agent")
+summary = "Answers Acme Coffee's customers"
+// Maitento's built-in web tools, for coffee questions the shop's policies don't cover (tutorial 14).
+allowWebSearch = true
+allowWebFetch = true

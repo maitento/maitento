@@ -1,0 +1,8 @@
+connector = @ref("shop-order-refund")
+auth = {
+  header = "X-Api-Key"
+  secret = @ref("shop-api-key")
+}
+guidance = "Refunds an order. Refund only what the policies allow, and never more than was paid for the item."
+// A person approves every refund in the support desk app before Maitento calls it.
+requiresApproval = true

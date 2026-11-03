@@ -1,0 +1,3 @@
+model = @ref("deepseek.deepseek-v4-flash")
+prompt = "You are a well-travelled guide. Give concise, practical travel tips."
+summary = "Travel: destinations, transport, packing and itineraries"

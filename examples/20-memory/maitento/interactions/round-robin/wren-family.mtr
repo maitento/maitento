@@ -1,0 +1,44 @@
+// Wren for the whole household. Unlike wren-chat (one loom per person), every conversation here
+// weaves into the one loom declared in looms/family.mtr, so what one person tells Wren, the next
+// person's conversation knows too.
+
+agents = [
+  {
+    name = "Wren"
+    agent = @ref("wren")
+    loom = @ref("family")
+  }
+]
+
+task = @prompt("wren-family")
+
+inputs.prompts = [
+  {
+    name = "userName"
+    required = true
+  }
+]
+
+features = {
+  voting = false
+  noAction = false
+  directQuestions = false
+  solutionProposal = false
+}
+
+human = {
+  first = true
+  solutions = false
+}
+
+loom = {
+  enabled = true
+  subjectInputs = [ "userName" ]
+  recall = "Suggest"
+  weave = "Suggest"
+}
+
+context = {
+  mode = "Automatic"
+  maxToolCallLoops = 12
+}

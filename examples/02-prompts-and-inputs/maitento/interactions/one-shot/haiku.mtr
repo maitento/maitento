@@ -1,0 +1,17 @@
+agent = {
+  name = "Poet"
+  agent = @ref("poet")
+}
+task = @prompt("haiku-task")
+inputs.prompts = [
+  {
+    name = "topic"
+    description = "What the haiku is about"
+    required = true
+  },
+  {
+    name = "mood"
+    description = "Optional mood, for example calm or playful"
+    required = false
+  }
+]

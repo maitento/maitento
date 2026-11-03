@@ -1,0 +1,45 @@
+// The challenge: quote the same parcels for several destinations, and return the cheapest.
+// rates.mtc is a copy of the shipping app's: an app's files belong to that app alone, so this app has its own.
+string main(string weights, string destinations) {
+	jsonArray places = StringSplit(destinations, ",", false);
+	string cheapest = "";
+	decimal best = 0;
+	for (int i = 0; i < JsonArrayCount(places); i++) {
+		string destination = StringTrim(JsonArrayGetAtIndex(places, i));
+		decimal quote = Quote(weights, destination);
+		PrintLine(StringPadRight(destination, 6, " ") + DecimalToString(quote, "0.00"));
+		if (cheapest == "" || quote < best) {
+			cheapest = destination;
+			best = quote;
+		}
+	}
+	return(cheapest);
+}
+
+// The shipping app's packing loop as a function: it returns the total, and prints nothing about the boxes.
+decimal Quote(string weights, string destination) {
+	decimal rate = DestinationRate(destination);
+	jsonArray parcels = StringSplit(weights, ",", false);
+	int boxes = 0;
+	decimal total = 0;
+	for (int i = 0; i < JsonArrayCount(parcels); i++) {
+		if (boxes == 6) {
+			break;
+		}
+		string weight = StringTrim(JsonArrayGetAtIndex(parcels, i));
+		if (weight == "" || !TypeIsDecimal(weight)) {
+			continue;
+		}
+		decimal left = weight;
+		while (left > 0) {
+			decimal box = MathMin(left, 20);
+			left = left - box;
+			string size = BoxSize(box);
+			decimal price = SizePrice(size) * rate;
+			boxes = boxes + 1;
+			total = total + price;
+		}
+	}
+	decimal discounted = WithDiscount(total, destination);
+	return(discounted);
+}
