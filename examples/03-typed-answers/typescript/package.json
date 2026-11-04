@@ -2,8 +2,10 @@
   "name": "maitento-example-03-typed-answers",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.18" },
+  "engines": {
+    "node": ">=22.18"
+  },
   "dependencies": {
-    "@maitento/sdk": "^26.10.0"
+    "@maitento/sdk": "^26.11.1"
   }
 }

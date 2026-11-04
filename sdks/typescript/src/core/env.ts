@@ -1,5 +1,5 @@
 /** The SDK's version, sent in the `User-Agent` on server runtimes. Kept equal to package.json by a unit test. */
-export const SDK_VERSION = "26.10.0";
+export const SDK_VERSION = "26.11.1";
 
 interface ProcessLike {
   env?: Record<string, string | undefined>;

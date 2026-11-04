@@ -2,7 +2,7 @@
 
 All notable changes to the `maitento` Python package. Versions are shared with the other Maitento SDKs (`YY.M.N`).
 
-## Unreleased
+## 26.11.1 (2026-11-03)
 
 - First release: `Maitento` (blocking) and `AsyncMaitento` (asyncio) clients covering every public API route,
   `deploy()`/`validate()` for resource projects, `run()` helpers with token streaming, live events over the

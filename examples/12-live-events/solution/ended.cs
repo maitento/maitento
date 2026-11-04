@@ -1,4 +1,4 @@
-#:package Maitento.Sdk@26.10.0
+#:package Maitento.Sdk@26.11.1
 
 // Tutorial 12's challenge: whenever one of your runs ends, say how long it worked and how many tokens it used.
 using Maitento.Entities.Interactions;

@@ -1,4 +1,4 @@
-#:package Maitento.Sdk@26.10.0
+#:package Maitento.Sdk@26.11.1
 
 using Maitento.Entities.WebHooks;
 using Maitento.Sdk;

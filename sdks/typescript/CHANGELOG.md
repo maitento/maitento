@@ -2,7 +2,7 @@
 
 All notable changes to `@maitento/sdk`. Versions follow the shared Maitento SDK scheme `YY.M.N`.
 
-## Unreleased
+## 26.11.1 (2026-11-03)
 
 First release.
 

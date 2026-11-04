@@ -1,5 +1,5 @@
 #:sdk Microsoft.NET.Sdk.Web
-#:package Maitento.Sdk@26.10.0
+#:package Maitento.Sdk@26.11.1
 #:property PublishAot=false
 
 // Acme Coffee's support desk: the console's API (/api), the webhook Maitento calls (/maitento/webhook), and the shop

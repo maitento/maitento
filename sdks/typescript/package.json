@@ -1,6 +1,6 @@
 {
   "name": "@maitento/sdk",
-  "version": "26.10.0",
+  "version": "26.11.1",
   "description": "The official TypeScript and JavaScript SDK for Maitento: deploy agents and interactions, run them, stream their output and react to their results.",
   "license": "Apache-2.0",
   "homepage": "https://docs.maitento.com",

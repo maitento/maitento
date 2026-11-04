@@ -12,7 +12,7 @@
     "ask-shop": "node ask-shop.ts"
   },
   "dependencies": {
-    "@maitento/sdk": "^26.10.0",
+    "@maitento/sdk": "^26.11.1",
     "express": "5.3.0"
   },
   "devDependencies": {
