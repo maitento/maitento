@@ -52,7 +52,7 @@ startup = [
 | `autoTerminate` | finish as soon as the startup commands are done |
 | `maxDuration` | the longest it may live, as `"hh:mm:ss"` (10 minutes by default), counted from when it starts. A capsule still starting up then fails; a ready one finishes, and a command still running is stopped |
 
-The machine already has Python 3, Node.js 22, .NET 8, Java 17, git, build tools, pandoc and ffmpeg.
+The machine already has Python 3, Node.js 22, .NET 8 and .NET 10, Java 17, git, build tools, pandoc and ffmpeg.
 
 ## Running commands
 

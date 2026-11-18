@@ -1,4 +1,4 @@
-#:package Maitento.Sdk@26.11.1
+#:package Maitento.Sdk@26.10.0
 
 using Maitento.Entities.Core;
 using Maitento.Entities.Interactions;

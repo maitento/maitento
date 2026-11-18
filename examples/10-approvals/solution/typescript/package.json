@@ -10,7 +10,7 @@
     "approvals": "node approvals.ts"
   },
   "dependencies": {
-    "@maitento/sdk": "^26.11.1"
+    "@maitento/sdk": "^26.10.0"
   },
   "devDependencies": {
     "@types/node": "22.18.0"

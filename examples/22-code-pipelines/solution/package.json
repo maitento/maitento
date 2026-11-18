@@ -2,10 +2,8 @@
   "name": "maitento-example-22-code-pipelines-solution",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=22.18"
-  },
+  "engines": { "node": ">=22.18" },
   "dependencies": {
-    "@maitento/sdk": "^26.11.1"
+    "@maitento/sdk": "^26.10.0"
   }
 }

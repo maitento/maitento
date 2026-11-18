@@ -28,7 +28,7 @@ Every property is optional.
 
 Optional. Text.
 
-A base image name, recorded with the capsule. Every capsule runs on the same image today (with Python 3, Node.js 22, .NET 8, Java 17, git and build tools), so it does not change what runs.
+A base image name, recorded with the capsule. Every capsule runs on the same image today (with Python 3, Node.js 22, .NET 8 and .NET 10, Java 17, git and build tools), so it does not change what runs.
 
 ```hcl
 template = "ubuntu:22.04"

@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <!-- For MaitentoWebhooks: checks a delivery's signature and reads its run. -->
-    <PackageReference Include="Maitento.Sdk" Version="26.11.1" />
+    <PackageReference Include="Maitento.Sdk" Version="26.10.0" />
   </ItemGroup>
 
 </Project>
