@@ -2,7 +2,7 @@
 
 All notable changes to `@maitento/sdk`. Versions follow the shared Maitento SDK scheme `YY.M.N`.
 
-## Unreleased
+## 26.11.2 (2026-11-19)
 
 - A 429 has its own retry budget, `maxRateLimitRetries` (default 6, on the client and per call): an idempotent call
   waits out `Retry-After`, or without one 1 s doubling to 32 s, over a minute in all, so an edge's one-minute

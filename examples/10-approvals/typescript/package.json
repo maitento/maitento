@@ -9,7 +9,7 @@
     "support": "node support.ts"
   },
   "dependencies": {
-    "@maitento/sdk": "^26.10.0"
+    "@maitento/sdk": "^26.11.2"
   },
   "devDependencies": {
     "@types/node": "22.18.0"

@@ -1,4 +1,4 @@
-#:package Maitento.Sdk@26.10.0
+#:package Maitento.Sdk@26.11.2
 
 using System.Text.RegularExpressions;
 using Maitento.Sdk;

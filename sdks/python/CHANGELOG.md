@@ -2,7 +2,7 @@
 
 All notable changes to the `maitento` Python package. Versions are shared with the other Maitento SDKs (`YY.M.N`).
 
-## Unreleased
+## 26.11.2 (2026-11-19)
 
 - A 429 has its own retry budget, `max_rate_limit_retries` (default 6): an idempotent call waits out `Retry-After`, or
   without one 1 s doubling to 32 s, over a minute in all, so an edge's one-minute rate-limit block no longer fails it.
