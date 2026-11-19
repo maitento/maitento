@@ -1,4 +1,4 @@
-"""Retry policy: only idempotent calls, on network errors, 429 and 502/503/504, honouring Retry-After."""
+"""Retry policy: only idempotent calls, on network errors, 502/503/504 and (with its own budget) 429, honouring Retry-After."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import respx
 import maitento
 from factories import sample
 from helpers import API_KEY, BASE
-from maitento._http import retry_after_seconds, retry_delay
+from maitento._http import rate_limit_delay, retry_after_seconds, retry_delay
 
 
 def test_get_is_retried_on_503_then_succeeds(mock: respx.MockRouter, client: maitento.Maitento, sleeps: List[float]) -> None:
@@ -113,6 +113,73 @@ async def test_async_retries(mock: respx.MockRouter, aclient: maitento.AsyncMait
     with pytest.raises(maitento.ApiError):
         await aclient.interactions.start("hello")
     assert start.call_count == 1
+
+
+def _edge_429() -> httpx.Response:
+    # An edge that rate-limits answers a challenge page with no Retry-After, and blocks for a minute.
+    return httpx.Response(429, text="<html>Just a moment...</html>", headers={"content-type": "text/html"})
+
+
+def test_a_429_without_retry_after_is_waited_out_for_over_a_minute(
+    mock: respx.MockRouter, client: maitento.Maitento, sleeps: List[float]
+) -> None:
+    route = mock.get("/namespaces").mock(side_effect=[_edge_429()] * 6 + [httpx.Response(200, json=[])])
+    assert client.namespaces.list() == []
+    assert route.call_count == 7
+    assert all(2.0**n <= s <= 1.25 * 2.0**n for n, s in enumerate(sleeps)) and len(sleeps) == 6
+    assert sum(sleeps) > 60
+
+
+def test_a_429_does_not_spend_the_gateway_retries(mock: respx.MockRouter, sleeps: List[float]) -> None:
+    route = mock.get("/namespaces").mock(side_effect=[_edge_429(), _edge_429(), httpx.Response(503), httpx.Response(200, json=[])])
+    with maitento.Maitento(API_KEY, base_url=BASE, max_retries=1, environ={}) as mt:
+        assert mt.namespaces.list() == []
+    assert route.call_count == 4
+
+
+def test_a_429_is_raised_once_its_budget_is_spent(mock: respx.MockRouter, sleeps: List[float]) -> None:
+    route = mock.get("/namespaces").mock(return_value=_edge_429())
+    with maitento.Maitento(API_KEY, base_url=BASE, max_rate_limit_retries=2, environ={}) as mt:
+        with pytest.raises(maitento.RateLimitError):
+            mt.namespaces.list()
+    assert route.call_count == 3
+
+    none = mock.get("/agents").mock(return_value=_edge_429())
+    with maitento.Maitento(API_KEY, base_url=BASE, max_rate_limit_retries=0, environ={}) as mt:
+        with pytest.raises(maitento.RateLimitError):
+            mt.agents.list()
+    assert none.call_count == 1
+
+
+def test_max_rate_limit_retries_cannot_be_negative() -> None:
+    with pytest.raises(maitento.ConfigurationError):
+        maitento.Maitento(API_KEY, base_url=BASE, max_rate_limit_retries=-1, environ={})
+
+
+def test_vfs_writes_are_retried_through_a_429_appends_are_not(mock: respx.MockRouter, client: maitento.Maitento) -> None:
+    file = sample("FileSystemFile")
+    vfs = client.vfs.open_by_id("v1")
+    write = mock.put("/vfs/by-id/v1/files/write/text").mock(side_effect=[_edge_429(), _edge_429(), httpx.Response(200, json=file)])
+    vfs.write_text("/a.txt", "a")
+    assert write.call_count == 3
+
+    mkdir = mock.put("/vfs/by-id/v1/directories").mock(side_effect=[_edge_429(), httpx.Response(200, json=sample("FileSystemDirectory"))])
+    vfs.mkdir("/examples")
+    assert mkdir.call_count == 2
+
+    append = mock.put("/vfs/by-id/v1/files/append/text").mock(return_value=_edge_429())
+    with pytest.raises(maitento.RateLimitError):
+        vfs.append("/log.txt", "line")
+    assert append.call_count == 1
+
+
+def test_rate_limit_delay_policy() -> None:
+    assert rate_limit_delay(0, rng=lambda: 0.0) == pytest.approx(1.0)
+    assert rate_limit_delay(5, rng=lambda: 0.0) == pytest.approx(32.0)
+    assert rate_limit_delay(9, rng=lambda: 1.0) == pytest.approx(40.0)
+    assert sum(rate_limit_delay(n, rng=lambda: 0.0) for n in range(6)) > 60
+    assert rate_limit_delay(3, retry_after=5) == 5
+    assert rate_limit_delay(0, retry_after=600) == 60
 
 
 def test_retry_delay_policy() -> None:

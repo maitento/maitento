@@ -31,7 +31,8 @@ wins on spelling (camelCase vs snake_case, `async`/`await` shape) but never on s
 | `baseUrl` | `MAITENTO_BASE_URL` | `https://api.maitento.com` |
 | `namespace`: the default namespace for by-name calls | `MAITENTO_NAMESPACE` | none; required where used |
 | `timeout` (per call, overridable per call) | - | 120 s |
-| `maxRetries` (idempotent calls only) | - | 2 |
+| `maxRetries` (idempotent calls only: network errors, 502, 503, 504) | - | 2 |
+| `maxRateLimitRetries` (idempotent calls only: a 429) | - | 6 |
 | `fetch` / `httpClient` injection, `userAgent` suffix | - | - |
 
 - On the wire an API key is the header `Authorization: ApiKey <userId> <secret>`. **`userId` is the id of the user that
@@ -126,8 +127,15 @@ project folder (every `.mtr`, `.mtc`, `.md`, `.json` file below it, keeping rela
 All of these derive from `MaitentoError`. Code branches on the **error type and `code`**, never on message text.
 
 **Retries:**
-- Network errors, 502/503/504 and 429 are retried, with exponential backoff and jitter, honouring `Retry-After`.
-- This applies only to `GET`/`HEAD`/`DELETE`, plus calls marked idempotent in the SDK source.
+- Network errors and 502/503/504 are retried up to `maxRetries` times, with exponential backoff and jitter, honouring
+  `Retry-After`.
+- A 429 has its own budget, `maxRateLimitRetries`. The wait is `Retry-After` (or the body's `retryAfterSeconds`), else
+  1 s doubling to 32 s, over a minute in all: an edge that rate-limits blocks for a minute and names no wait, and the
+  quick retries above would all land inside the block.
+- Both apply only to `GET`/`HEAD`/`DELETE`, plus calls marked idempotent in the SDK source: writing a VFS file,
+  creating a VFS directory and the VFS tree, find and batch reads in all three SDKs, and in TypeScript and Python also
+  the settings that are set rather than added to. C# sends its marked calls with `PutIdempotent`/`PostIdempotent`. An
+  append is never one of them.
 
 ## 6. Live events
 

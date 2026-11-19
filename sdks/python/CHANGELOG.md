@@ -4,6 +4,14 @@ All notable changes to the `maitento` Python package. Versions are shared with t
 
 ## Unreleased
 
+- A 429 has its own retry budget, `max_rate_limit_retries` (default 6): an idempotent call waits out `Retry-After`, or
+  without one 1 s doubling to 32 s, over a minute in all, so an edge's one-minute rate-limit block no longer fails it.
+  Network errors and 502/503/504 keep `max_retries`.
+- `write_text()`, `write_bytes()` and `write_lines()` on a VFS are retried like the other idempotent calls, as in the
+  TypeScript and C# SDKs. Appends still are not.
+
+## 26.11.1 (2026-11-04)
+
 - First release: `Maitento` (blocking) and `AsyncMaitento` (asyncio) clients covering every public API route,
   `deploy()`/`validate()` for resource projects, `run()` helpers with token streaming, live events over the
   `/notifications` WebSocket, typed errors, paged lists, and web-hook verification helpers.

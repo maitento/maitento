@@ -67,6 +67,7 @@ export function testClient(handler: Handler, options: MaitentoOptions = {}): { m
     namespace: "demo",
     fetch,
     maxRetries: 0,
+    maxRateLimitRetries: 0,
     ...options,
   });
   return { mt, calls };

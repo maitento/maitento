@@ -20,7 +20,18 @@ import httpx
 from .. import _sio
 from .._auth import Credentials, JwtState
 from .._generated.models import AuthenticateResponse
-from .._http import NO_BODY, RETRY_STATUSES, RequestSpec, decode_body, error_for, parse, retry_after_seconds, retry_delay
+from .._http import (
+    DEFAULT_MAX_RATE_LIMIT_RETRIES,
+    NO_BODY,
+    RETRY_STATUSES,
+    RequestSpec,
+    decode_body,
+    error_for,
+    parse,
+    rate_limit_delay,
+    retry_after_seconds,
+    retry_delay,
+)
 from .._version import __version__
 from ..errors import (
     AuthenticationError,
@@ -52,6 +63,7 @@ class Transport:
         credentials: Credentials,
         timeout: float,
         max_retries: int,
+        max_rate_limit_retries: int = DEFAULT_MAX_RATE_LIMIT_RETRIES,
         http_client: Optional[httpx.Client] = None,
         user_agent: Optional[str] = None,
         clock: Callable[[], float] = time.time,
@@ -61,6 +73,7 @@ class Transport:
         self.credentials = credentials
         self.timeout = timeout
         self.max_retries = max_retries
+        self.max_rate_limit_retries = max_rate_limit_retries
         self.user_agent = default_user_agent(user_agent)
         self._http = http_client if http_client is not None else httpx.Client()
         self._owns_http = http_client is None
@@ -162,6 +175,7 @@ class Transport:
     def send(self, spec: RequestSpec) -> httpx.Response:
         """Sends ``spec`` with retries (idempotent calls only) and returns the 2xx response, or raises."""
         attempt = 0
+        rate_limit_attempt = 0
         reauthenticate = False
         timeout = spec.timeout if spec.timeout is not None else self.timeout
         url = self.base_url + spec.path
@@ -195,7 +209,14 @@ class Transport:
                 raise ConnectionError(f"Could not reach {self.base_url} ({spec.method} {spec.path}): {error}") from error
 
             status = response.status_code
-            if status in RETRY_STATUSES and spec.retryable and attempt < self.max_retries:
+            if status == 429:
+                # A 429 has its own, longer budget (DEFAULT_MAX_RATE_LIMIT_RETRIES); it never spends the gateway retries.
+                if spec.retryable and rate_limit_attempt < self.max_rate_limit_retries:
+                    retry_after = retry_after_seconds(response.headers, _json_or_none(response))
+                    _sio.sleep(rate_limit_delay(rate_limit_attempt, retry_after=retry_after, rng=self._rng))
+                    rate_limit_attempt += 1
+                    continue
+            elif status in RETRY_STATUSES and spec.retryable and attempt < self.max_retries:
                 retry_after = retry_after_seconds(response.headers, _json_or_none(response))
                 _sio.sleep(retry_delay(attempt, retry_after=retry_after, rng=self._rng))
                 attempt += 1

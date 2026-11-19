@@ -8,6 +8,7 @@ from typing import Any, Mapping, Optional
 import httpx
 
 from .._auth import ApiKeyInput, TokenProvider, resolve_credentials
+from .._http import DEFAULT_MAX_RATE_LIMIT_RETRIES
 from .._generated.models import BuildResponse
 from .._project import ProjectSource
 from ..errors import ConfigurationError
@@ -73,7 +74,8 @@ class AsyncMaitento:
 
     Options: ``base_url`` (default ``https://api.maitento.com``), ``namespace`` (the default for by-name calls),
     ``timeout`` (seconds per call, default 120; every method also takes ``timeout=``), ``max_retries`` (default 2,
-    idempotent calls only), ``http_client`` (your own ``httpx`` client; it is used as-is and never modified or
+    idempotent calls only, after a network error, 502, 503 or 504), ``max_rate_limit_retries`` (default 6, idempotent
+    calls only: times a 429 is waited out, ``Retry-After`` or else 1 s doubling to 32 s), ``http_client`` (your own ``httpx`` client; it is used as-is and never modified or
     closed), ``user_agent`` (appended to the SDK's).
     """
 
@@ -89,6 +91,7 @@ class AsyncMaitento:
         namespace: Optional[str] = None,
         timeout: float = DEFAULT_TIMEOUT,
         max_retries: int = DEFAULT_MAX_RETRIES,
+        max_rate_limit_retries: int = DEFAULT_MAX_RATE_LIMIT_RETRIES,
         http_client: Optional[httpx.AsyncClient] = None,
         user_agent: Optional[str] = None,
         environ: Optional[Mapping[str, str]] = None,
@@ -102,6 +105,8 @@ class AsyncMaitento:
             raise ConfigurationError(f"base_url must start with http:// or https://, not {resolved_url!r}")
         if max_retries < 0:
             raise ConfigurationError("max_retries cannot be negative")
+        if max_rate_limit_retries < 0:
+            raise ConfigurationError("max_rate_limit_retries cannot be negative")
         self.namespace: Optional[str] = (namespace or env.get("MAITENTO_NAMESPACE") or "").strip() or None
         """The default namespace for by-name calls."""
         self._transport = AsyncTransport(
@@ -109,6 +114,7 @@ class AsyncMaitento:
             credentials=credentials,
             timeout=timeout,
             max_retries=max_retries,
+            max_rate_limit_retries=max_rate_limit_retries,
             http_client=http_client,
             user_agent=user_agent,
         )

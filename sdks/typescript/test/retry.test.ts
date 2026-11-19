@@ -106,6 +106,46 @@ describe("retries: idempotent calls only", () => {
   });
 });
 
+describe("retries: a 429 has its own budget", () => {
+  // An edge that rate-limits (a 429 page, no Retry-After) blocks for a minute: `mt vfs-sync` failed a deploy on it.
+  const edge429 = () => new Response("<html>Just a moment...</html>", { status: 429, headers: { "content-type": "text/html" } });
+
+  it("waits out a 429 with no Retry-After for over a minute, 1 s doubling, then succeeds", async () => {
+    const { client, calls, waits } = http((_, i) => (i < 6 ? edge429() : json([])), 0);
+    await expect(client.request(GET)).resolves.toEqual([]);
+    expect(calls.length).toBe(7);
+    // random() = 0.5 adds an eighth: 1 s doubling to 32 s, each × 1.125.
+    expect(waits).toEqual([1125, 2250, 4500, 9000, 18000, 36000]);
+    expect(waits.reduce((a, b) => a + b, 0)).toBeGreaterThan(60_000);
+  });
+
+  it("does not spend the gateway retries on a 429", async () => {
+    const { client, calls } = http((_, i) => (i < 2 ? edge429() : i === 2 ? json({}, 503) : json([])), 1);
+    await expect(client.request(GET)).resolves.toEqual([]);
+    expect(calls.length).toBe(4);
+  });
+
+  it("surfaces the 429 once its budget is spent, or at once with a budget of 0", async () => {
+    const spent = http(() => edge429());
+    await expect(spent.client.request({ ...GET, options: { maxRateLimitRetries: 2 } })).rejects.toBeInstanceOf(RateLimitError);
+    expect(spent.calls.length).toBe(3);
+
+    const none = http(() => edge429());
+    await expect(none.client.request({ ...GET, options: { maxRateLimitRetries: 0 } })).rejects.toBeInstanceOf(RateLimitError);
+    expect(none.calls.length).toBe(1);
+  });
+
+  it("retries an idempotent PUT through a 429, never a plain one", async () => {
+    const marked = http((_, i) => (i < 2 ? edge429() : json({})));
+    await marked.client.request({ method: "PUT", path: "/vfs/x/files/write/text", body: {}, response: "void", idempotent: true });
+    expect(marked.calls.length).toBe(3);
+
+    const plain = http(() => edge429());
+    await expect(plain.client.request({ method: "PUT", path: "/vfs/x/files/append/text", body: {}, response: "void" })).rejects.toBeInstanceOf(RateLimitError);
+    expect(plain.calls.length).toBe(1);
+  });
+});
+
 describe("retries through the client: starts are never retried", () => {
   const starts: Array<[string, (mt: ReturnType<typeof testClient>["mt"]) => Promise<unknown>]> = [
     ["interactions.start", (mt) => mt.interactions.start("hello")],
@@ -120,10 +160,14 @@ describe("retries through the client: starts are never retried", () => {
   ];
 
   for (const [name, call] of starts) {
-    it(`${name}: one attempt on a 503 and on a network error`, async () => {
+    it(`${name}: one attempt on a 503, a 429 and a network error`, async () => {
       const unavailable = testClient(() => json({}, 503), { maxRetries: 5 });
       await expect(call(unavailable.mt)).rejects.toMatchObject({ status: 503 });
       expect(unavailable.calls).toHaveLength(1);
+
+      const limited = testClient(() => json({ code: "api:rate-limited", retryAfterSeconds: 1 }, 429), { maxRateLimitRetries: 6 });
+      await expect(call(limited.mt)).rejects.toMatchObject({ status: 429 });
+      expect(limited.calls).toHaveLength(1);
 
       const offline = testClient(() => {
         throw new TypeError("connection reset");

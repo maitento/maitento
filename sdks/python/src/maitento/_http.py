@@ -47,6 +47,7 @@ __all__ = [
     "parse",
     "path",
     "query",
+    "rate_limit_delay",
     "retry_delay",
     "retry_after_seconds",
     "wire",
@@ -56,7 +57,12 @@ M = TypeVar("M", bound=pydantic.BaseModel)
 T = TypeVar("T")
 
 RETRY_STATUSES = frozenset({429, 502, 503, 504})
-"""Statuses worth retrying (idempotent calls only)."""
+"""Statuses worth retrying (idempotent calls only). A 429 draws on its own budget (``max_rate_limit_retries``)."""
+
+DEFAULT_MAX_RATE_LIMIT_RETRIES = 6
+"""Times an idempotent call waits out a 429 by default. Without a ``Retry-After`` the waits are 1, 2, 4, 8, 16 and 32
+seconds (plus up to a quarter more, never less), over a minute in all: an edge that rate-limits typically blocks for a
+minute and sends no ``Retry-After``, and the quick retries the gateway statuses get would all land inside it."""
 
 _IDEMPOTENT_METHODS = frozenset({"GET", "HEAD", "DELETE"})
 
@@ -458,3 +464,18 @@ def retry_delay(
         return min(retry_after, max_retry_after)
     ceiling = min(cap, base * (2.0**attempt))
     return ceiling * (0.5 + rng() / 2)
+
+
+def rate_limit_delay(
+    attempt: int,
+    *,
+    retry_after: Optional[float] = None,
+    rng: Callable[[], float] = random.random,
+    max_retry_after: float = 60.0,
+) -> float:
+    """Seconds to wait before re-sending a call the API answered 429 (``attempt`` 0-based): ``Retry-After`` when the
+    server gave one, else 1 s doubling to 32 s, jittered upwards only (100-125%), so the default six outlast a one-minute
+    block."""
+    if retry_after is not None:
+        return min(retry_after, max_retry_after)
+    return min(32.0, 2.0**attempt) * (1 + rng() / 4)

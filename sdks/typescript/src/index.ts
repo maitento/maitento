@@ -1,6 +1,13 @@
 // The official TypeScript / JavaScript SDK for Maitento. Docs: https://docs.maitento.com
 
-export { Maitento, DEFAULT_BASE_URL, DEFAULT_MAX_RETRIES, DEFAULT_TIMEOUT_MS, type MaitentoOptions } from "./client.js";
+export {
+  Maitento,
+  DEFAULT_BASE_URL,
+  DEFAULT_MAX_RATE_LIMIT_RETRIES,
+  DEFAULT_MAX_RETRIES,
+  DEFAULT_TIMEOUT_MS,
+  type MaitentoOptions,
+} from "./client.js";
 
 export {
   MaitentoError,

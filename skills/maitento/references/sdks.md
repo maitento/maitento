@@ -95,7 +95,9 @@ the `code`, never on the message:
 | other | `ApiError` | `status`, `code`, `body` |
 
 Calls that start AI work (start, run, deploy, upload) are **never retried automatically**: a retried start would
-create a second run. Reads and deletes are retried on network errors, 502, 503, 504 and 429.
+create a second run. Reads, deletes and writes that are safe to repeat (writing a VFS file, creating a directory) are
+retried on network errors, 502, 503 and 504, and wait out a 429: `Retry-After`, or about a minute without one
+(`maxRateLimitRetries`, default 6).
 
 ## Knowing when a run is done
 

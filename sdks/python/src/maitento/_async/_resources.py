@@ -2014,8 +2014,13 @@ class AsyncVfsHandle:
     def _url(self, suffix: str) -> str:
         return self._base + suffix
 
-    async def _file(self, method: str, suffix: str, body: Any, file_path: str, timeout: Timeout) -> FileSystemFile:
-        spec = RequestSpec(method, self._url(suffix), query=query(("path", file_path)), json=body, timeout=timeout)
+    async def _file(
+        self, method: str, suffix: str, body: Any, file_path: str, timeout: Timeout, *, idempotent: bool
+    ) -> FileSystemFile:
+        # A write leaves the same file however often it arrives, so it is retried; an append is not.
+        spec = RequestSpec(
+            method, self._url(suffix), query=query(("path", file_path)), json=body, idempotent=idempotent, timeout=timeout
+        )
         spec.expect_body = True
         return cast(FileSystemFile, parse(FileSystemFile, await self._send(spec)))
 
@@ -2041,24 +2046,24 @@ class AsyncVfsHandle:
         return [str(line) for line in (await self._send(spec) or [])]
 
     async def write_text(self, file_path: str, content: str, *, timeout: Timeout = None) -> FileSystemFile:
-        return await self._file("PUT", "/files/write/text", {"content": content}, file_path, timeout)
+        return await self._file("PUT", "/files/write/text", {"content": content}, file_path, timeout, idempotent=True)
 
     async def write_bytes(self, file_path: str, content: bytes, *, timeout: Timeout = None) -> FileSystemFile:
         body = {"content": _b64(content)}
-        return await self._file("PUT", "/files/write/bytes", body, file_path, timeout)
+        return await self._file("PUT", "/files/write/bytes", body, file_path, timeout, idempotent=True)
 
     async def write_lines(self, file_path: str, lines: Sequence[str], *, timeout: Timeout = None) -> FileSystemFile:
-        return await self._file("PUT", "/files/write/lines", {"content": list(lines)}, file_path, timeout)
+        return await self._file("PUT", "/files/write/lines", {"content": list(lines)}, file_path, timeout, idempotent=True)
 
     async def append(self, file_path: str, content: str, *, timeout: Timeout = None) -> FileSystemFile:
         """Appends text to a file (creating it when missing). See also ``append_bytes`` and ``append_lines``."""
-        return await self._file("PUT", "/files/append/text", {"content": content}, file_path, timeout)
+        return await self._file("PUT", "/files/append/text", {"content": content}, file_path, timeout, idempotent=False)
 
     async def append_bytes(self, file_path: str, content: bytes, *, timeout: Timeout = None) -> FileSystemFile:
-        return await self._file("PUT", "/files/append/bytes", {"content": _b64(content)}, file_path, timeout)
+        return await self._file("PUT", "/files/append/bytes", {"content": _b64(content)}, file_path, timeout, idempotent=False)
 
     async def append_lines(self, file_path: str, lines: Sequence[str], *, timeout: Timeout = None) -> FileSystemFile:
-        return await self._file("PUT", "/files/append/lines", {"content": list(lines)}, file_path, timeout)
+        return await self._file("PUT", "/files/append/lines", {"content": list(lines)}, file_path, timeout, idempotent=False)
 
     async def list(self, directory: str = "/", *, timeout: Timeout = None) -> List[FileSystemEntry]:
         """The entries of a directory (files and directories, by ``type_``)."""

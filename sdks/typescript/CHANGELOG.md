@@ -4,6 +4,14 @@ All notable changes to `@maitento/sdk`. Versions follow the shared Maitento SDK 
 
 ## Unreleased
 
+- A 429 has its own retry budget, `maxRateLimitRetries` (default 6, on the client and per call): an idempotent call
+  waits out `Retry-After`, or without one 1 s doubling to 32 s, over a minute in all, so an edge's one-minute
+  rate-limit block no longer fails it. Network errors and 502/503/504 keep `maxRetries`.
+- A 429 that names no wait is no longer read as "retry after 0 s", which re-sent the call at once:
+  `RateLimitError.retryAfter` is `undefined`.
+
+## 26.11.1 (2026-11-04)
+
 First release.
 
 - `Maitento` client: API key, JWT (renewed proactively) or e-mail and password; `MAITENTO_API_KEY`,

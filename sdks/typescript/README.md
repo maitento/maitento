@@ -52,8 +52,9 @@ await mt.close();
   `for await` over every item.
 - Dates are `Date`s and durations are milliseconds; the SDK converts to and from the server's formats.
 - Errors are typed (`ValidationError`, `AuthenticationError`, `PermissionError`, `NotFoundError`, `RateLimitError`, …,
-  all `MaitentoError`). Idempotent calls are retried on network errors, 429 and 5xx gateway errors; anything that starts
-  work is never retried.
+  all `MaitentoError`). Idempotent calls are retried on network errors and 5xx gateway errors, and wait out a 429
+  (`Retry-After`, or about a minute without one: `maxRateLimitRetries`, default 6); anything that starts work is never
+  retried.
 - `verifyWebhook()` checks a web-hook delivery's signature from its raw body, and `parseWebhook()` reads it;
   `transcript()` orders a run's conversation.
 

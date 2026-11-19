@@ -54,7 +54,8 @@ asyncio.run(main())
 - **Live events** (`mt.events.connect()`): callbacks with `on(...)` or a plain `for event in stream` loop, with
   automatic pings, reconnects and a `reconnected` event.
 - **Typed errors** (`ValidationError`, `NotFoundError`, `RateLimitError`, ...), all derived from `MaitentoError`.
-  Calls that only read are retried on network errors, 429 and 502/503/504, honouring `Retry-After`.
+  Calls that are safe to repeat (reads, deletes, VFS writes) are retried on network errors and 502/503/504, and wait
+  out a 429: `Retry-After`, or about a minute without one (`max_rate_limit_retries`, default 6).
 - **Paged lists** you can iterate across pages: `for run in mt.runs.list(state="Terminal"): ...`
 - **Web-hook helpers** for your receiver: `verify_webhook(headers, body, secret)` checks a delivery's signature from
   its raw body, and `parse_webhook(headers, body)` reads it.

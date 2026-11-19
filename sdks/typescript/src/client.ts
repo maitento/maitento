@@ -1,7 +1,7 @@
 import { ApiKeyAuth, JwtAuth, parseApiKey, type ApiKeyCredential, type AuthProvider, type AuthTransport } from "./core/auth.js";
 import { readEnv } from "./core/env.js";
 import { MaitentoError } from "./core/errors.js";
-import { HttpClient } from "./core/http.js";
+import { DEFAULT_MAX_RATE_LIMIT_RETRIES, HttpClient } from "./core/http.js";
 import { Events, type WebSocketImplementation } from "./events.js";
 import type { AuthenticateResponse, BuildResponse } from "./models.js";
 import { Agents } from "./resources/agents.js";
@@ -27,6 +27,7 @@ import { Vfs } from "./resources/vfs.js";
 export const DEFAULT_BASE_URL = "https://api.maitento.com";
 export const DEFAULT_TIMEOUT_MS = 120_000;
 export const DEFAULT_MAX_RETRIES = 2;
+export { DEFAULT_MAX_RATE_LIMIT_RETRIES };
 
 /** How to build a {@link Maitento} client. Every option is optional when the environment variables are set. */
 export interface MaitentoOptions {
@@ -48,8 +49,13 @@ export interface MaitentoOptions {
   namespace?: string;
   /** Per-call timeout in milliseconds (each call can override it). Default 120 000. */
   timeout?: number;
-  /** Retries of an idempotent call on a network error, 429, 502, 503 or 504. Default 2. Starts are never retried. */
+  /** Retries of an idempotent call on a network error, 502, 503 or 504. Default 2. Starts are never retried. */
   maxRetries?: number;
+  /**
+   * Times an idempotent call waits out a 429 and is sent again: `Retry-After` when the answer gives one, else 1, 2, 4,
+   * 8, 16 and 32 seconds, over a minute in all. Default 6; 0 surfaces the first 429. Starts are never retried.
+   */
+  maxRateLimitRetries?: number;
   /** A `fetch` to use instead of the global one. */
   fetch?: typeof fetch;
   /** Appended to the `User-Agent` (server runtimes). */
@@ -219,6 +225,7 @@ export class Maitento {
       baseUrl: this.baseUrl,
       timeout: options.timeout ?? DEFAULT_TIMEOUT_MS,
       maxRetries: options.maxRetries ?? DEFAULT_MAX_RETRIES,
+      maxRateLimitRetries: options.maxRateLimitRetries ?? DEFAULT_MAX_RATE_LIMIT_RETRIES,
       fetch: fetchImpl,
       userAgent: options.userAgent,
       defaultHeaders: options.defaultHeaders,

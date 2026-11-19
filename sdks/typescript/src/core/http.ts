@@ -25,8 +25,10 @@ export interface RequestOptions {
   timeout?: number;
   /** Cancels the call (an `AbortError`). */
   signal?: AbortSignal;
-  /** Retries for an idempotent call (network errors, 429, 502, 503, 504). Defaults to the client's. */
+  /** Retries for an idempotent call after a network error, 502, 503 or 504. Defaults to the client's. */
   maxRetries?: number;
+  /** Times an idempotent call waits out a 429 and is sent again. Defaults to the client's. */
+  maxRateLimitRetries?: number;
   /** Extra request headers. */
   headers?: Record<string, string>;
 }
@@ -79,6 +81,8 @@ export interface HttpClientConfig {
   baseUrl: string;
   timeout: number;
   maxRetries: number;
+  /** Times an idempotent call waits out a 429 and is sent again. Defaults to `DEFAULT_MAX_RATE_LIMIT_RETRIES`. */
+  maxRateLimitRetries?: number | undefined;
   fetch: typeof fetch;
   userAgent?: string | undefined;
   defaultHeaders?: Record<string, string> | undefined;
@@ -99,6 +103,13 @@ interface Exchange {
 
 const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
 const MAX_RETRY_AFTER_MS = 60_000;
+
+/**
+ * Times an idempotent call waits out a 429 by default. Without a `Retry-After` the waits are 1, 2, 4, 8, 16 and 32
+ * seconds (plus up to a quarter more, never less), over a minute in all: an edge that rate-limits typically blocks for
+ * a minute and sends no `Retry-After`, and the quick retries the gateway statuses get would all land inside it.
+ */
+export const DEFAULT_MAX_RATE_LIMIT_RETRIES = 6;
 
 /** Sleeps `ms`, rejecting with the signal's reason when it aborts. */
 export function sleep(ms: number, signal?: AbortSignal): Promise<void> {
@@ -178,6 +189,11 @@ export class HttpClient {
     const options = req.options ?? {};
     const idempotent = req.idempotent ?? (req.method === "GET" || req.method === "DELETE");
     const maxRetries = idempotent ? Math.max(0, options.maxRetries ?? this.config.maxRetries) : 0;
+    // A 429 has its own, longer budget (see DEFAULT_MAX_RATE_LIMIT_RETRIES).
+    const maxRateLimitRetries = idempotent
+      ? Math.max(0, options.maxRateLimitRetries ?? this.config.maxRateLimitRetries ?? DEFAULT_MAX_RATE_LIMIT_RETRIES)
+      : 0;
+    let rateLimitAttempt = 0;
     let refreshedAuth = false;
     for (let attempt = 0; ; attempt++) {
       let exchange: Exchange;
@@ -223,7 +239,18 @@ export class HttpClient {
       } finally {
         exchange.done();
       }
-      if (RETRYABLE_STATUSES.has(response.status) && attempt < maxRetries) {
+      if (response.status === 429) {
+        if (rateLimitAttempt < maxRateLimitRetries) {
+          const wait = this.retryDelay(response, error, rateLimitAttempt, this.rateLimitBackoff(rateLimitAttempt));
+          if (wait !== undefined) {
+            rateLimitAttempt++;
+            // A rate-limited call is not one of the gateway retries: give back the attempt the loop counts.
+            attempt--;
+            await this.sleepFn(wait, options.signal);
+            continue;
+          }
+        }
+      } else if (RETRYABLE_STATUSES.has(response.status) && attempt < maxRetries) {
         const wait = this.retryDelay(response, error, attempt);
         if (wait !== undefined) {
           await this.sleepFn(wait, options.signal);
@@ -239,8 +266,14 @@ export class HttpClient {
     return Math.round(base * (0.75 + this.random() * 0.5));
   }
 
-  /** The delay before a retry: `Retry-After` when the server set it (capped), else exponential backoff. */
-  private retryDelay(response: Response, error: ApiError, attempt: number): number | undefined {
+  /** The wait before re-sending a 429 that named none: 1 s doubling to 32 s, jittered upwards only. */
+  private rateLimitBackoff(attempt: number): number {
+    const base = Math.min(32_000, 1000 * 2 ** attempt);
+    return Math.round(base * (1 + this.random() * 0.25));
+  }
+
+  /** The delay before a retry: `Retry-After` when the server set it (capped), else `fallback` (exponential backoff). */
+  private retryDelay(response: Response, error: ApiError, attempt: number, fallback?: number): number | undefined {
     let seconds: number | undefined;
     const header = response.headers.get("retry-after");
     if (header) {
@@ -256,7 +289,7 @@ export class HttpClient {
       seconds = error.retryAfter;
     }
     if (seconds === undefined) {
-      return this.backoff(attempt);
+      return fallback ?? this.backoff(attempt);
     }
     const ms = seconds * 1000;
     // A server that asks for a long wait gets the error instead of a silently blocked call.
@@ -451,7 +484,9 @@ export class HttpClient {
           guidance: typeof record.guidance === "string" ? record.guidance : undefined,
         });
       case 429: {
-        const header = Number(response.headers.get("retry-after"));
+        // No header is no wait given (Number(null) would read it as 0, and a 0 s wait re-sends at once).
+        const raw = response.headers.get("retry-after");
+        const header = raw === null || raw.trim() === "" ? NaN : Number(raw);
         const retryAfter =
           typeof record.retryAfterSeconds === "number" ? record.retryAfterSeconds : isNaN(header) ? undefined : header;
         return new RateLimitError(message, init, retryAfter);

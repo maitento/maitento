@@ -123,6 +123,10 @@ describe("error mapping: the four body shapes and every status", () => {
     expect(fromBody.retryAfter).toBe(7);
     const fromHeader = (await failure(() => json({}, 429, { "retry-after": "3" }))) as RateLimitError;
     expect(fromHeader.retryAfter).toBe(3);
+    // An edge's 429 page names no wait: that is "unknown", not "0 s" (which would re-send at once).
+    const none = (await failure(() => text("<html>Just a moment...</html>", 429))) as RateLimitError;
+    expect(none).toBeInstanceOf(RateLimitError);
+    expect(none.retryAfter).toBeUndefined();
   });
 
   it("500 (and any other status) → ApiError with status and raw body", async () => {
